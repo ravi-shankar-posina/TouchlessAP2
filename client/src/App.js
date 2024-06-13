@@ -100,7 +100,7 @@ function App() {
       Material: "3BSE078762R1",
       qty: 5,
       price: 78.29,
-      Amount: 391.45000000000005,
+      Amount: 39.45000000000005,
       key: 10,
     },
     {
@@ -230,9 +230,9 @@ function App() {
       Description: "AIS810 Analog Input 4 to 20mA",
       qty: 2,
       price: 78.29,
-      Amount: 156.58,
+      Amount: 150.58,
       key: 1,
-      status: "Successfully Process",
+      status: "Amount Mismatch",
     },
     {
       poNum: "3165354054",
@@ -292,18 +292,18 @@ function App() {
       price: 78.29,
       Amount: 391.45,
       key: 6,
-      status: "Successfully Process",
+      status: "Amount Mismatch!",
     },
 
     {
       poNum: "3165354060",
       Item: 20,
       Material: "3BSE070093R1",
-      qty: 15,
+      qty: 10,
       price: 84.35,
-      Amount: 1265.25,
+      Amount: 125.25,
       key: 8,
-      status: "Successfully Process",
+      status: "Qty / Amount Mismatch",
     },
 
     {
@@ -311,11 +311,11 @@ function App() {
       Item: 30,
       Material: "3BSE070124R1",
       DESCRIPTION: "EOW-x2 workplace",
-      qty: 10,
+      qty: 8,
       price: 82.25,
-      Amount: 847.175,
+      Amount: 522.5,
       key: 10,
-      status: "Successfully Process",
+      status: "Qty Mismatch",
     },
     {
       poNum: "3165354060",
@@ -344,11 +344,11 @@ function App() {
       Item: 60,
       Material: "3BSE070127R1",
       DESCRIPTION: "EOW-f3 workplace",
-      qty: 3,
+      qty: 2,
       price: 73.2,
-      Amount: 226.188,
+      Amount: 119.60000000000002,
       key: 13,
-      status: "Successfully Process",
+      status: "Amount Mismatch",
     },
     {
       poNum: "3165354060",
@@ -456,16 +456,16 @@ function App() {
     const newFailedData = [];
 
     filteredPdfData.forEach((row) => {
-      const matchingRow = filteredXlData.find(
+      const amountMatch = filteredXlData.find(
         (item) =>
           Math.floor(row.price) === Math.floor(item.price) &&
           Math.floor(row.Amount) === Math.floor(item.Amount),
       );
 
-      if (matchingRow) {
-        newSuccessData.push({ ...row, status: "Successfully processed" });
+      if (amountMatch) {
+        newSuccessData.push(row);
       } else {
-        newFailedData.push({ ...row, status: "Amount Mismatch!" });
+        newFailedData.push(row);
       }
     });
 
@@ -481,21 +481,23 @@ function App() {
       </div>
     );
   }
-  console.log(currentTable)
+  console.log(currentTable);
   return (
     <POProvider>
       <div className="App">
         <Router>
-          <Routes>
-            {/* <Route path="/" element={<LoginPage />} /> */}
-          </Routes>
+          <Routes>{/* <Route path="/" element={<LoginPage />} /> */}</Routes>
           <div style={{ display: "flex" }}>
             <div style={{ width: "100%" }}>
               <Routes>
                 <Route
                   path="/home"
                   element={
-                    <Cards successData={successData} setCurrentTable={setCurrentTable} failedData={failedData} />
+                    <Cards
+                      successData={successData}
+                      setCurrentTable={setCurrentTable}
+                      failedData={failedData}
+                    />
                   }
                 />
                 {/* <Route

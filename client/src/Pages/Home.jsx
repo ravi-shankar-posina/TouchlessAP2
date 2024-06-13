@@ -656,7 +656,7 @@ const ChartsContainer = ({ chartData, getColor }) => (
     }}
   >
     {/* Pie Chart */}
-    <Card title="Pie Chart" bordered={false} style={{ flex: 1 }}>
+    {/* <Card title="Pie Chart" bordered={false} style={{ flex: 1 }}>
       <ResponsiveContainer width="100%" height={250}>
         <PieChart>
           <Pie data={chartData} dataKey="value" nameKey="name" fill="#8884d8">
@@ -668,9 +668,9 @@ const ChartsContainer = ({ chartData, getColor }) => (
           <Legend />
         </PieChart>
       </ResponsiveContainer>
-    </Card>
+    </Card> */}
     {/* Bar Chart */}
-    <Card
+    {/* <Card
       title="Bar Chart"
       bordered={false}
       style={{ flex: 1, marginLeft: "50px" }}
@@ -688,7 +688,7 @@ const ChartsContainer = ({ chartData, getColor }) => (
           </Bar>
         </BarChart>
       </ResponsiveContainer>
-    </Card>
+    </Card> */}
   </div>
 );
 

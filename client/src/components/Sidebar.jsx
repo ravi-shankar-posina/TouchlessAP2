@@ -68,7 +68,7 @@ const Sidebar = () => {
       key: "3",
       icon: <SettingOutlined />,
       label: "Settings",
-      link: "/settings",
+      link: "/",
     },
     {
       key: "4",

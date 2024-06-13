@@ -486,7 +486,7 @@ function App() {
       <div className="App">
         <Router>
           <Routes>
-            <Route path="/" element={<LoginPage />} />
+            {/* <Route path="/" element={<LoginPage />} /> */}
           </Routes>
           <div style={{ display: "flex" }}>
             <div style={{ width: "100%" }}>
@@ -520,7 +520,7 @@ function App() {
                     />
                   }
                 />
-                <Route path="/settings" element={<Settings />} />
+                <Route path="/" element={<Settings />} />
                 <Route path="/ponumber" element={<InputPage />} />
               </Routes>
             </div>

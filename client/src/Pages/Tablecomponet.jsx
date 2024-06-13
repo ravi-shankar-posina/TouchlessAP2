@@ -53,8 +53,10 @@ const Tablecomponet = ({
   setSuccessData,
   failedData,
   setFailedData,
+  currentTable,
+  setCurrentTable
 }) => {
-  const [currentTable, setCurrentTable] = useState("Success");
+  
 
   const [editingKey, setEditingKey] = useState("");
   const isEditing = (record) => record.key === editingKey;

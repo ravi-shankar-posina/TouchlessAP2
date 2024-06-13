@@ -21,7 +21,7 @@ import { server } from "../constants";
 import Layout from "../components/Layout";
 import axios from "axios";
 import { Link } from "react-router-dom";
-const Cards = ({ successData:sd, failedData }) => {
+const Cards = ({ successData:sd, failedData, setCurrentTable }) => {
   const [processCount, setProcessCount] = useState(0);
   const [errorCount, setErrorCount] = useState(0);
 
@@ -595,7 +595,7 @@ const Cards = ({ successData:sd, failedData }) => {
 
           <Col>
             <Link to="/header" state={{ type: "error" }}>
-              <Card
+              <Card onClick={()=> setCurrentTable("Fail")}
                 style={{
                   width: "350px",
                   backgroundColor: "#db5858",

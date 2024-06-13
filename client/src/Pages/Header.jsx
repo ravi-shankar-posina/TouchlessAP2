@@ -8,7 +8,7 @@ import axios from "axios";
 import { useLocation } from "react-router-dom";
 import { usePO } from "./POContext";
 import Tablecomponet from "./Tablecomponet";
-const Process = ({ DBdata, PDFdata, setDBdata, setPDFdata ,successData,setSuccessData,failedData,setFailedData}) => {
+const Process = ({ DBdata, PDFdata, setDBdata, setPDFdata ,successData,setSuccessData,failedData,setFailedData, currentTable, setCurrentTable}) => {
   const [myres, setMyres] = useState([]);
   const [headerData, setHeaderData] = useState([]);
   const [pdfVisible, setPdfVisible] = useState(false);
@@ -908,6 +908,8 @@ const Process = ({ DBdata, PDFdata, setDBdata, setPDFdata ,successData,setSucces
                       setSuccessData={setSuccessData}
                       failedData={failedData}
                       setFailedData={setFailedData}
+                      currentTable = {currentTable}
+                      setCurrentTable = {setCurrentTable}
           />
         </div>
 

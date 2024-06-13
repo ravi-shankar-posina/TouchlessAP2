@@ -437,6 +437,7 @@ function App() {
     },
   ]);
 
+  const [currentTable, setCurrentTable] = useState("Success");
   const [poNumber, setPoNumber] = useState("3165354060");
 
   const [successData, setSuccessData] = useState([]);
@@ -480,7 +481,7 @@ function App() {
       </div>
     );
   }
-
+  console.log(currentTable)
   return (
     <POProvider>
       <div className="App">
@@ -494,7 +495,7 @@ function App() {
                 <Route
                   path="/home"
                   element={
-                    <Cards successData={successData} failedData={failedData} />
+                    <Cards successData={successData} setCurrentTable={setCurrentTable} failedData={failedData} />
                   }
                 />
                 {/* <Route
@@ -517,6 +518,8 @@ function App() {
                       setSuccessData={setSuccessData}
                       failedData={failedData}
                       setFailedData={setFailedData}
+                      currentTable={currentTable}
+                      setCurrentTable={setCurrentTable}
                     />
                   }
                 />

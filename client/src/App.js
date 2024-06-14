@@ -446,10 +446,10 @@ function App() {
 
   useEffect(() => {
     const filteredXlData = DBdata.filter(
-      (row) => String(row.poNum) === String(poNumber),
+      (row) => String(row.poNum) === String(poNumber)
     );
     const filteredPdfData = PDFdata.filter(
-      (row) => String(row.poNum) === String(poNumber),
+      (row) => String(row.poNum) === String(poNumber)
     );
 
     const newSuccessData = [];
@@ -459,7 +459,7 @@ function App() {
       const amountMatch = filteredXlData.find(
         (item) =>
           Math.floor(row.price) === Math.floor(item.price) &&
-          Math.floor(row.Amount) === Math.floor(item.Amount),
+          Math.floor(row.Amount) === Math.floor(item.Amount)
       );
 
       if (amountMatch) {

@@ -54,10 +54,8 @@ const Tablecomponet = ({
   failedData,
   setFailedData,
   currentTable,
-  setCurrentTable
+  setCurrentTable,
 }) => {
-  
-
   const [editingKey, setEditingKey] = useState("");
   const isEditing = (record) => record.key === editingKey;
   const [form] = Form.useForm();
@@ -91,7 +89,7 @@ const Tablecomponet = ({
             ...item,
             price: row.price,
             Amount: row.Amount,
-            status: "Successfully processed",
+            status: "Successfully Process",
           },
         ]);
 

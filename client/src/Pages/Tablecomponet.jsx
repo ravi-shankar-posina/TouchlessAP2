@@ -99,6 +99,9 @@ const Tablecomponet = ({
       console.log("Validate Failed:", errInfo);
     }
   };
+  const onCancel = () => {
+    setEditingKey("");
+  };
 
   const successColumns = [
     {
@@ -197,7 +200,12 @@ const Tablecomponet = ({
             >
               Save
             </Typography.Link>
-            <Popconfirm title="Sure to cancel?" onConfirm={() => {}}>
+            <Popconfirm
+              title="Sure to cancel?"
+              onConfirm={() => {
+                setEditingKey("");
+              }}
+            >
               <a>Cancel</a>
             </Popconfirm>
           </span>

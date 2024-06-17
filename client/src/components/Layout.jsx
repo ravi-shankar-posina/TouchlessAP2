@@ -4,7 +4,7 @@ import bg from "../assets/bg.jpeg";
 
 const Layout = ({ children }) => {
   return (
-    <div style={{ display: "flex", height: "100%", overflow: "clip" }}>
+    <div style={{ display: "flex", overflow: "clip" }}>
       <Sidebar />
       <div style={{ boxSizing: "border-box", width: "100%" }}>
         <div

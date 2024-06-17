@@ -45,6 +45,7 @@ const Cards = ({ successData: sd, failedData, setCurrentTable }) => {
   const chartData = [
     { name: "SUCCESS", value: processCount },
     { name: "ERROR", value: errorCount },
+
     // { name: "GR NO", value: 0 }, // You can set a default value for GR NO or fetch it from your data
   ];
 

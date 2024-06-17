@@ -181,7 +181,12 @@ const Tablecomponet = ({
       dataIndex: "status",
       key: "status",
       render: (status) => (
-        <span className="font-semibold text-red-500">{status}</span>
+        <span
+          className="font-semibold text-red-500"
+          style={{ fontWeight: 600, color: "red" }}
+        >
+          {status}
+        </span>
       ), // Render the status
     },
     {

@@ -337,7 +337,7 @@ function App() {
       price: 56.88,
       Amount: 601.92,
       key: 12,
-      status: "Successfully Process",
+      status: "Amount Mismatch",
     },
     {
       poNum: "3165354060",
@@ -370,7 +370,7 @@ function App() {
       price: 77.88,
       Amount: 439.4,
       key: 15,
-      status: "Successfully Process",
+      status: "Qty / Amount Mismatch",
     },
     {
       poNum: "3165354060",
@@ -403,7 +403,7 @@ function App() {
       price: 101.1,
       Amount: 570.5,
       key: 18,
-      status: "Successfully Process",
+      status: "Qty / Amount Mismatch",
     },
     {
       poNum: "3165354058",

@@ -55,7 +55,7 @@ const Sidebar = () => {
     {
       key: "2",
       icon: <FileOutlined />,
-      label: "Header",
+      label: "Po Line Items",
       link: "/header",
     },
     // {

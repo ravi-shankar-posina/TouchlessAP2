@@ -8,7 +8,13 @@ import {
   Typography,
 } from "antd";
 import { useEffect, useState } from "react";
-
+import invoice from "../assets/Invoice-2.pdf";
+import {
+  CloudDownloadOutlined,
+  ArrowUpOutlined,
+  ArrowDownOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
 const EditableCell = ({
   editing,
   dataIndex,
@@ -103,11 +109,21 @@ const Tablecomponet = ({
     setEditingKey("");
   };
 
+  const handlePdfDownload = () => {
+    const link = document.createElement("a");
+    link.href = invoice;
+    link.download = "invoice";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(invoice);
+  };
   const successColumns = [
     {
       title: "Purchasing Document",
       dataIndex: "poNum",
       key: "poNum",
+      width: 200,
     },
     {
       title: "Item",
@@ -146,6 +162,7 @@ const Tablecomponet = ({
       title: "Purchasing Document",
       dataIndex: "poNum",
       key: "poNum",
+      width: 200,
     },
     {
       title: "Item",
@@ -167,14 +184,14 @@ const Tablecomponet = ({
       dataIndex: "price",
       key: "price",
       editable: true,
-      width: 200,
+      width: 150,
     },
     {
       title: "Amount",
       dataIndex: "Amount",
       key: "Amount",
       editable: true,
-      width: 200,
+      width: 150,
     },
     {
       title: "Status",
@@ -223,7 +240,24 @@ const Tablecomponet = ({
           </Typography.Link>
         );
       },
-      width: 200,
+      width: 130,
+    },
+    {
+      title: "Document",
+      dataIndex: "doc",
+      key: "doc",
+      render: (text, value) => {
+        return (
+          <div>
+            <Typography.Link>
+              <CloudDownloadOutlined
+                style={{ fontSize: 18, marginLeft: 25 }}
+                onClick={handlePdfDownload}
+              />
+            </Typography.Link>
+          </div>
+        );
+      },
     },
   ];
 

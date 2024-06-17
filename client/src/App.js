@@ -21,6 +21,7 @@ function App() {
       price: 78.29,
       Amount: 156.58,
       key: 1,
+      status: "Amount Mismatch",
     },
     {
       poNum: "3165354054",
@@ -30,6 +31,7 @@ function App() {
       price: 84.35,
       Amount: 843.5,
       key: 2,
+      status: "Successfully Process",
     },
     {
       poNum: "3165354054",
@@ -39,6 +41,7 @@ function App() {
       price: 82.25,
       Amount: 575.75,
       key: 3,
+      status: "Successfully Process",
     },
     {
       poNum: "3165354054",
@@ -46,8 +49,9 @@ function App() {
       Material: "3BSE070125R1",
       qty: 7,
       price: 54.3,
-      Amount: 380.09999999999997,
+      Amount: 380.09,
       key: 4,
+      status: "Successfully Process",
     },
     {
       poNum: "3165354054",
@@ -57,6 +61,7 @@ function App() {
       price: 66.88,
       Amount: 200.64,
       key: 5,
+      status: "Successfully Process",
     },
     {
       poNum: "3165354058",
@@ -100,8 +105,9 @@ function App() {
       Material: "3BSE078762R1",
       qty: 5,
       price: 78.29,
-      Amount: 39.45000000000005,
+      Amount: 39.45,
       key: 10,
+      status: "Amount Mismatch!",
     },
     {
       poNum: "3165354060",
@@ -111,6 +117,7 @@ function App() {
       price: 84.35,
       Amount: 1265.25,
       key: 11,
+      status: "Qty / Amount Mismatch",
     },
     {
       poNum: "3165354060",
@@ -120,6 +127,7 @@ function App() {
       price: 82.25,
       Amount: 822.5,
       key: 12,
+      status: "Qty Mismatch",
     },
     {
       poNum: "3165354060",
@@ -129,6 +137,7 @@ function App() {
       price: 54.3,
       Amount: 434.4,
       key: 13,
+      status: "Successfully Process",
     },
     {
       poNum: "3165354060",
@@ -138,6 +147,7 @@ function App() {
       price: 66.88,
       Amount: 601.92,
       key: 14,
+      status: "Amount Mismatch",
     },
     {
       poNum: "3165354060",
@@ -145,8 +155,9 @@ function App() {
       Material: "3BSE070127R1",
       qty: 3,
       price: 73.2,
-      Amount: 219.60000000000002,
+      Amount: 219.6,
       key: 15,
+      status: "Amount Mismatch",
     },
     {
       poNum: "3165354060",
@@ -156,6 +167,7 @@ function App() {
       price: 78.1,
       Amount: 312.4,
       key: 16,
+      status: "Successfully Process",
     },
     {
       poNum: "3165354060",
@@ -165,6 +177,7 @@ function App() {
       price: 87.88,
       Amount: 439.4,
       key: 17,
+      status: "Qty / Amount Mismatch",
     },
     {
       poNum: "3165354060",
@@ -174,6 +187,7 @@ function App() {
       price: 33,
       Amount: 363,
       key: 18,
+      status: "Successfully Process",
     },
     {
       poNum: "3165354060",
@@ -183,6 +197,7 @@ function App() {
       price: 112.34,
       Amount: 561.7,
       key: 19,
+      status: "Successfully Process",
     },
     {
       poNum: "3165354060",
@@ -192,6 +207,7 @@ function App() {
       price: 101.1,
       Amount: 505.5,
       key: 20,
+      status: "Qty / Amount Mismatch",
     },
     {
       poNum: "3165354056",
@@ -455,8 +471,8 @@ function App() {
     const newSuccessData = [];
     const newFailedData = [];
 
-    filteredPdfData.forEach((row) => {
-      const amountMatch = filteredXlData.find(
+    filteredXlData.forEach((row) => {
+      const amountMatch = filteredPdfData.find(
         (item) =>
           Math.floor(row.price) === Math.floor(item.price) &&
           Math.floor(row.Amount) === Math.floor(item.Amount)

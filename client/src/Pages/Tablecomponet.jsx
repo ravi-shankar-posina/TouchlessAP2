@@ -112,7 +112,7 @@ const Tablecomponet = ({
           record.status
         )
       ) {
-        message.error("Give valid data");
+        message.error("Provide the Current Quantity and Amount");
         return;
       }
 

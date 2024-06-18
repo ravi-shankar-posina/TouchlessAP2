@@ -6,6 +6,7 @@ import {
   Popconfirm,
   Table,
   Typography,
+  message,
 } from "antd";
 import { useEffect, useState } from "react";
 import invoice from "../assets/Invoice-2.pdf";
@@ -62,6 +63,9 @@ const Tablecomponet = ({
   currentTable,
   setCurrentTable,
 }) => {
+  console.log("DBdata: ", DBdata);
+  const [currentStatus, setCurrentStatus] = useState("");
+  const [currentPrice, setCurrentPrice] = useState(0);
   const [editingKey, setEditingKey] = useState("");
   const isEditing = (record) => record.key === editingKey;
   const [form] = Form.useForm();
@@ -73,7 +77,23 @@ const Tablecomponet = ({
       address: "",
       ...record,
     });
+    setCurrentPrice(record.price);
+    setCurrentStatus(record.status);
     setEditingKey(record.key);
+  };
+
+  const validateData = (poNum, item, qty, amount, status) => {
+    const dbRecord = DBdata.find(
+      (data) => data.poNum === poNum && data.Item === item
+    );
+    if (status === "Qty-Mismatch") {
+      return dbRecord && dbRecord.qty == qty;
+    } else if (status === "Amount-Mismatch") {
+      return dbRecord && dbRecord.Amount == amount;
+    } else if (status === "Qty / Amount-Mismatch") {
+      return dbRecord && dbRecord.qty == qty && dbRecord.Amount == amount;
+    }
+    return true;
   };
 
   const save = async (key) => {
@@ -81,24 +101,33 @@ const Tablecomponet = ({
       const row = await form.validateFields();
       const newData = [...failedData];
       const index = newData.findIndex((item) => key === item.key);
-      console.log("index: ", index);
+      const record = newData[index];
+
+      if (
+        !validateData(
+          record.poNum,
+          record.Item,
+          row.qty,
+          row.Amount,
+          record.status
+        )
+      ) {
+        message.error("Give valid data");
+        return;
+      }
 
       if (index > -1) {
         const item = newData[index];
+        const updatedItem = {
+          ...item,
+          qty: row.qty !== undefined ? row.qty : item.qty,
+          Amount: row.Amount !== undefined ? row.Amount : item.Amount,
+          status: "Successfully Process",
+        };
 
         const filtered = newData.filter((item) => item.key !== key);
         setFailedData(filtered);
-
-        setSuccessData((prev) => [
-          ...prev,
-          {
-            ...item,
-            price: row.price,
-            Amount: row.Amount,
-            status: "Successfully Process",
-          },
-        ]);
-
+        setSuccessData((prev) => [...prev, updatedItem]);
         setEditingKey("");
       }
     } catch (errInfo) {
@@ -175,22 +204,27 @@ const Tablecomponet = ({
       key: "Material",
     },
     {
-      title: "Qty",
-      dataIndex: "qty",
-      key: "qty",
-    },
-    {
       title: "Price",
       dataIndex: "price",
       key: "price",
-      editable: true,
+    },
+    {
+      title: "Qty",
+      dataIndex: "qty",
+      editable:
+        currentStatus === "Qty-Mismatch" ||
+        currentStatus === "Qty / Amount-Mismatch",
+      key: "qty",
       width: 150,
     },
+
     {
       title: "Amount",
       dataIndex: "Amount",
       key: "Amount",
-      editable: true,
+      editable:
+        currentStatus === "Amount-Mismatch" ||
+        currentStatus === "Qty / Amount-Mismatch",
       width: 150,
     },
     {
@@ -265,6 +299,7 @@ const Tablecomponet = ({
     if (!col.editable) {
       return col;
     }
+    console.log("record: ", col);
     return {
       ...col,
       onCell: (record) => ({
@@ -276,7 +311,9 @@ const Tablecomponet = ({
       }),
     };
   });
-
+  const handleRefresh = () => {
+    setTimeout(window.location.reload(), 5000);
+  };
   return (
     <div>
       <Button style={{ width: 85 }} onClick={() => setCurrentTable("Success")}>
@@ -290,7 +327,7 @@ const Tablecomponet = ({
       </Button>
       <Button
         style={{ width: 85, marginLeft: 10, marginBottom: 10 }}
-        onClick={() => setCurrentTable("")}
+        onClick={handleRefresh}
       >
         Pre-Process
       </Button>

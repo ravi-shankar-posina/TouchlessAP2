@@ -81,42 +81,24 @@ const Tablecomponet = ({
     setCurrentStatus(record.status);
     setEditingKey(record.key);
   };
+
   const validateData = (poNum, item, qty, amount, status) => {
     const dbRecord = DBdata.find(
       (data) => data.poNum === poNum && data.Item === item
     );
 
-    if (!dbRecord) return true; // If no matching record is found, assume data is valid
-
-    let qtyMismatch = dbRecord.qty !== qty;
-    let amountMismatch = dbRecord.Amount !== amount;
-
-    switch (status) {
-      case "Qty-Mismatch":
-        return qtyMismatch ? "Provide the Current Quantity" : true;
-
-      case "Amount-Mismatch":
-        return amountMismatch ? "Provide the Current Amount" : true;
-
-      case "Qty / Amount-Mismatch":
-        // Re-evaluate qtyMismatch and amountMismatch within this case
-        qtyMismatch = dbRecord.qty !== qty;
-        amountMismatch = dbRecord.Amount !== amount;
-
-        if (qtyMismatch && !amountMismatch) {
-          return "Provide the Current Quantity";
-        }
-        if (!qtyMismatch && amountMismatch) {
-          return "Provide the Current Amount";
-        }
-        if (qtyMismatch && amountMismatch) {
-          return "Provide the Current Quantity and Amount";
-        }
-        return true;
-
-      default:
-        return true;
+    if (status === "Qty-Mismatch") {
+      return dbRecord && dbRecord.qty == qty ? true : `Current Quantity`;
+    } else if (status === "Amount-Mismatch") {
+      return dbRecord && dbRecord.Amount == amount ? true : `Current Amount`;
+    } else if (status === "Qty / Amount-Mismatch") {
+      return dbRecord && dbRecord.qty == qty && dbRecord.Amount == amount
+        ? true
+        : `Current Quantity
+         and Current Amount`;
     }
+
+    return true;
   };
 
   const save = async (key) => {
@@ -135,7 +117,7 @@ const Tablecomponet = ({
       );
 
       if (validationMessage !== true) {
-        message.error(validationMessage);
+        message.error(`Provide the ${validationMessage}`);
         return;
       }
 

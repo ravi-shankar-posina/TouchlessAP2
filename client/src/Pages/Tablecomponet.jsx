@@ -9,7 +9,11 @@ import {
   message,
 } from "antd";
 import { useEffect, useState } from "react";
-import invoice from "../assets/Invoice-2.pdf";
+import invoice from "../assets/3165354060.pdf";
+import invoice1 from "../assets/3165378098.pdf";
+import invoice2 from "../assets/3165378198.pdf";
+import invoice3 from "../assets/3165378918.pdf";
+
 import {
   CloudDownloadOutlined,
   ArrowUpOutlined,
@@ -144,14 +148,31 @@ const Tablecomponet = ({
     setEditingKey("");
   };
 
-  const handlePdfDownload = () => {
-    const link = document.createElement("a");
-    link.href = invoice;
-    link.download = "invoice";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(invoice);
+  const handlePdfDownload = (poNumber) => {
+    console.log("poNumber: ", poNumber);
+    const poToPdfMap = {
+      3165354060: invoice,
+      3165378098: invoice1,
+      3165378198: invoice2,
+      3165378918: invoice3,
+      // Add more PO numbers and their corresponding PDF URLs here
+    };
+    console.log("poToPdfMap: ", poToPdfMap);
+
+    const pdfUrl = poToPdfMap[poNumber];
+    console.log("pdfUrl: ", pdfUrl);
+
+    if (pdfUrl) {
+      const link = document.createElement("a");
+      link.href = pdfUrl;
+      link.download = `${poNumber}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(pdfUrl);
+    } else {
+      alert("PDF not found for the given PO number.");
+    }
   };
   const successColumns = [
     {
@@ -286,13 +307,13 @@ const Tablecomponet = ({
       title: "Document",
       dataIndex: "doc",
       key: "doc",
-      render: (text, value) => {
+      render: (text, record) => {
         return (
           <div>
             <Typography.Link>
               <CloudDownloadOutlined
                 style={{ fontSize: 18, marginLeft: 25 }}
-                onClick={handlePdfDownload}
+                onClick={() => handlePdfDownload(record.poNum)}
               />
             </Typography.Link>
           </div>

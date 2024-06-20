@@ -65,20 +65,20 @@ const Sidebar = () => {
     //   label: "Scanner",
     //   link: "/scanner",
     // },
+    // {
+    //   key: "3",
+    //   icon: <DatabaseOutlined />,
+    //   label: "Source Data",
+    //   link: "sourcedata",
+    // },
     {
       key: "3",
-      icon: <DatabaseOutlined />,
-      label: "Source Data",
-      link: "sourcedata",
-    },
-    {
-      key: "4",
       icon: <SettingOutlined />,
       label: "Settings",
       link: "/",
     },
     {
-      key: "5",
+      key: "4",
       icon: <LogoutOutlined />,
       label: "Logout",
       onClick: handleLogout,

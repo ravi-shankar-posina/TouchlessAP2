@@ -1293,7 +1293,7 @@ function App() {
       price: 77.88,
       Amount: 439.4,
       key: 15,
-      status: "Qty / Amount-Mismatch",
+      status: "Successfully Process",
     },
     {
       poNum: "3165354060",

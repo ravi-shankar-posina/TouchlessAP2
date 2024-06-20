@@ -8,6 +8,7 @@ import {
   LogoutOutlined,
   FileOutlined,
   ScanOutlined,
+  DatabaseOutlined,
 } from "@ant-design/icons";
 import { Layout, Menu, Modal } from "antd";
 import thinkAIlogo from "../assets/thinkAIlogo.png";
@@ -66,18 +67,23 @@ const Sidebar = () => {
     // },
     {
       key: "3",
+      icon: <DatabaseOutlined />,
+      label: "Source Data",
+      link: "sourcedata",
+    },
+    {
+      key: "4",
       icon: <SettingOutlined />,
       label: "Settings",
       link: "/",
     },
     {
-      key: "4",
+      key: "5",
       icon: <LogoutOutlined />,
       label: "Logout",
       onClick: handleLogout,
     },
   ];
-
   return (
     <>
       <Layout style={{ minHeight: "98vh" }}>

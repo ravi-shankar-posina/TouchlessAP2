@@ -1462,7 +1462,7 @@ function App() {
                 />
                 <Route path="/" element={<Settings />} />
                 <Route path="/ponumber" element={<InputPage />} />
-                {/* <Route path="/sourcedata" element={<SourceData />} /> */}
+                <Route path="/sourcedata" element={<SourceData />} />
               </Routes>
             </div>
           </div>

@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import thinkAI from "../assets/thinkAI.png";
+import abb from "../assets/abb.png";
 import {
   HomeOutlined,
-  ClockCircleOutlined,
+  FileOutlined,
+  DatabaseOutlined,
   SettingOutlined,
   LogoutOutlined,
-  FileOutlined,
-  ScanOutlined,
-  DatabaseOutlined,
 } from "@ant-design/icons";
 import { Layout, Menu, Modal } from "antd";
-import thinkAIlogo from "../assets/thinkAIlogo.png";
+// import abb2 from "../assets/abb.png";
+
 const { Sider } = Layout;
 
 const Sidebar = () => {
@@ -21,6 +20,7 @@ const Sidebar = () => {
     localStorage.getItem("sidebarCollapsed") === "true" || false
   );
   const location = useLocation();
+  const [hoverKey, setHoverKey] = useState(null);
 
   const handleLogout = () => {
     setLogoutModalVisible(true);
@@ -47,48 +47,32 @@ const Sidebar = () => {
 
   const menuItems = [
     { key: "1", icon: <HomeOutlined />, label: "Home", link: "/home" },
-    // {
-    //   key: "2",
-    //   icon: <ClockCircleOutlined />,
-    //   label: "TLprocess",
-    //   link: "/tlprocess",
-    // },
     {
       key: "2",
       icon: <FileOutlined />,
       label: "Po Line Items",
       link: "/header",
     },
-    // {
-    //   key: "2",
-    //   icon: <ScanOutlined />,
-    //   label: "Scanner",
-    //   link: "/scanner",
-    // },
-    // {
-    //   key: "3",
-    //   icon: <DatabaseOutlined />,
-    //   label: "Source Data",
-    //   link: "sourcedata",
-    // },
     {
       key: "3",
-      icon: <SettingOutlined />,
-      label: "Settings",
-      link: "/",
+      icon: <DatabaseOutlined />,
+      label: "Source Data",
+      link: "/sourcedata",
     },
+    { key: "4", icon: <SettingOutlined />, label: "Settings", link: "/" },
     {
-      key: "4",
+      key: "5",
       icon: <LogoutOutlined />,
       label: "Logout",
       onClick: handleLogout,
     },
   ];
+
   return (
     <>
       <Layout style={{ minHeight: "98vh" }}>
         <Sider
-          style={{ backgroundColor: "#E1B6E6" }}
+          style={{ backgroundColor: "white", border: "1px solid gray" }}
           collapsible
           collapsed={collapsed}
           onCollapse={(value) => setCollapsed(value)}
@@ -104,9 +88,9 @@ const Sidebar = () => {
               }}
             >
               <img
-                src={thinkAI}
+                src={abb}
                 alt="Logo"
-                style={{ width: "150px", height: "55px", marginTop: "20px" }}
+                style={{ width: "90px", height: "35px", marginTop: "30px" }}
               />
             </div>
           )}
@@ -121,9 +105,9 @@ const Sidebar = () => {
               }}
             >
               <img
-                src={thinkAIlogo}
+                src={abb}
                 alt="Logo"
-                style={{ width: "45px", height: "55px", marginTop: "20px" }}
+                style={{ width: "45px", height: "15px", marginTop: "50px" }}
               />
             </div>
           )}
@@ -135,25 +119,43 @@ const Sidebar = () => {
             mode="inline"
             style={{ margin: "10px" }}
           >
-            {menuItems.map(({ key, icon, label, link, onClick }) => (
-              <Menu.Item
-                key={key}
-                icon={icon}
-                onClick={onClick}
-                style={{
-                  width: "80%",
-                  backgroundColor:
-                    location.pathname === link ? "white" : "transparent",
-                }}
-              >
-                <Link
-                  to={link}
-                  style={{ color: collapsed ? "white" : "inherit" }}
+            {menuItems.map(({ key, icon, label, link, onClick }) => {
+              const isSelected = location.pathname === link;
+
+              return (
+                <Menu.Item
+                  key={key}
+                  icon={React.cloneElement(icon, {
+                    style: { color: isSelected ? "white" : "inherit" },
+                  })}
+                  onClick={onClick}
+                  onMouseEnter={() => setHoverKey(key)}
+                  onMouseLeave={() => setHoverKey(null)}
+                  style={{
+                    width: "80%",
+                    backgroundColor: isSelected
+                      ? "#002140"
+                      : hoverKey === key
+                      ? "lightgray"
+                      : "transparent",
+                    transition: "background-color 0.3s ease",
+                  }}
                 >
-                  {label}
-                </Link>
-              </Menu.Item>
-            ))}
+                  <Link
+                    to={link}
+                    style={{
+                      color: isSelected
+                        ? "white"
+                        : collapsed
+                        ? "white"
+                        : "inherit",
+                    }}
+                  >
+                    {label}
+                  </Link>
+                </Menu.Item>
+              );
+            })}
           </Menu>
 
           {/* Logout Confirmation Modal */}

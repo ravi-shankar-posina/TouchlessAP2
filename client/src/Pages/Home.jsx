@@ -83,7 +83,7 @@ const Cards = ({ successData: sd, failedData, setCurrentTable }) => {
   return (
     <Layout>
       {/* <div style={{ display: "flex",    }}> */}
-      <div style={{ width: "100%", border: "3px solid black" }}>
+      <div style={{ width: "100%", height: "95vh", border: "3px solid black" }}>
         {/* Cards Row */}
         <div
           style={{

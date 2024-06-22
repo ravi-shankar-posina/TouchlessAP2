@@ -341,23 +341,64 @@ const Tablecomponet = ({
   const handleRefresh = () => {
     setTimeout(window.location.reload(), 5000);
   };
+
+  const [timeString, setTimeString] = useState(getFormattedTime());
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimeString(getFormattedTime());
+    }, 1000); // Update timeString every second (1000 milliseconds)
+
+    return () => clearInterval(interval); // Cleanup the interval on component unmount
+  }, []); // Empty dependency array ensures effect runs only on mount and unmount
+
+  function getFormattedTime() {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const seconds = String(now.getSeconds()).padStart(2, "0");
+    return `${hours}:${minutes}:${seconds}`;
+  }
   return (
     <div>
-      <Button style={{ width: 85 }} onClick={() => setCurrentTable("Success")}>
-        Success
-      </Button>
-      <Button
-        style={{ width: 85, marginLeft: 10, marginBottom: 10 }}
-        onClick={() => setCurrentTable("Fail")}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          flexDirection: "row",
+        }}
       >
-        Verify
-      </Button>
-      <Button
-        style={{ width: 85, marginLeft: 10, marginBottom: 10 }}
-        onClick={handleRefresh}
+        {" "}
+        <div style={{}}>
+          <Button
+            style={{ width: 85, marginLeft: 10, marginBottom: 10 }}
+            onClick={handleRefresh}
+          >
+            Pre-Process
+          </Button>
+          <Button
+            style={{ width: 85, marginLeft: 10, marginBottom: 10 }}
+            onClick={() => setCurrentTable("Fail")}
+          >
+            Verify
+          </Button>
+          <Button
+            style={{ width: 85, marginLeft: 10 }}
+            onClick={() => setCurrentTable("Success")}
+          >
+            Success
+          </Button>
+        </div>
+      </div>
+      <span
+        style={{
+          display: "flex",
+          justifyContent: "start",
+          fontWeight: "400",
+          marginBottom: "10px",
+        }}
       >
-        Pre-Process
-      </Button>
+        Time: {timeString}
+      </span>
       {currentTable === "Success" ? (
         <div>
           <Table dataSource={successData} columns={successColumns} />

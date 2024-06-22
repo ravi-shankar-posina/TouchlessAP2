@@ -341,22 +341,22 @@ const Tablecomponet = ({
   const handleRefresh = () => {
     setTimeout(window.location.reload(), 5000);
   };
+  const [dateString, setDateString] = useState(getFormattedDate());
 
-  const [timeString, setTimeString] = useState(getFormattedTime());
   useEffect(() => {
     const interval = setInterval(() => {
-      setTimeString(getFormattedTime());
-    }, 1000); // Update timeString every second (1000 milliseconds)
+      setDateString(getFormattedDate());
+    }, 1000); // Update dateString every second (1000 milliseconds)
 
     return () => clearInterval(interval); // Cleanup the interval on component unmount
   }, []); // Empty dependency array ensures effect runs only on mount and unmount
 
-  function getFormattedTime() {
+  function getFormattedDate() {
     const now = new Date();
-    const hours = String(now.getHours()).padStart(2, "0");
-    const minutes = String(now.getMinutes()).padStart(2, "0");
-    const seconds = String(now.getSeconds()).padStart(2, "0");
-    return `${hours}:${minutes}:${seconds}`;
+    const day = String(now.getDate()).padStart(2, "0");
+    const month = String(now.getMonth() + 1).padStart(2, "0"); // Month is zero-based
+    const year = now.getFullYear();
+    return `${day}/${month}/${year}`;
   }
   return (
     <div>
@@ -397,7 +397,7 @@ const Tablecomponet = ({
           marginBottom: "10px",
         }}
       >
-        Time: {timeString}
+        Date: {dateString}
       </span>
       {currentTable === "Success" ? (
         <div>

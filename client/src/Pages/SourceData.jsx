@@ -1070,12 +1070,12 @@ const SourceData = () => {
     const day = String(now.getDate()).padStart(2, "0");
     const month = String(now.getMonth() + 1).padStart(2, "0"); // Month is zero-based
     const year = now.getFullYear();
-    return `${day}/${month}/${year}`;
+    return `${day}-${month}-${year}`;
   }
   return (
     <Layout>
       <div style={{}}>
-        <div style={{ marginBottom: "20px" }}>
+        <div style={{ padding: 10 }}>
           <Button
             // type={currentTable === "PO Header" ? "primary" : "default"}
             onClick={() => handleButtonClick("PO Header")}
@@ -1103,13 +1103,16 @@ const SourceData = () => {
             display: "flex",
             justifyContent: "start",
             fontWeight: "400",
-            marginBottom: "10px",
+
+            padding: 5,
           }}
         >
           Date: {dateString}
         </span>
         {currentTable === "PO Header" && (
-          <Table dataSource={dataSourcePOHeader} columns={columnsPOLines} />
+          <div style={{ padding: 5 }}>
+            <Table dataSource={dataSourcePOHeader} columns={columnsPOLines} />
+          </div>
         )}
         {/* {currentTable === "PO Lines" && (
           <Table

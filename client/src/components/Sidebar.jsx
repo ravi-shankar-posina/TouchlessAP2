@@ -7,6 +7,8 @@ import {
   DatabaseOutlined,
   SettingOutlined,
   LogoutOutlined,
+  FileTextOutlined,
+  BlockOutlined,
 } from "@ant-design/icons";
 import { Layout, Menu, Modal } from "antd";
 // import abb2 from "../assets/abb.png";
@@ -49,19 +51,25 @@ const Sidebar = () => {
     { key: "1", icon: <HomeOutlined />, label: "Home", link: "/home" },
     {
       key: "2",
-      icon: <FileOutlined />,
+      icon: <BlockOutlined />,
+      label: "Header Items",
+      link: "/headeritem",
+    },
+    {
+      key: "3",
+      icon: <FileTextOutlined />,
       label: "Po Line Items",
       link: "/header",
     },
     {
-      key: "3",
+      key: "4",
       icon: <DatabaseOutlined />,
       label: "Source Data",
       link: "/sourcedata",
     },
-    { key: "4", icon: <SettingOutlined />, label: "Settings", link: "/" },
+    { key: "5", icon: <SettingOutlined />, label: "Settings", link: "/" },
     {
-      key: "5",
+      key: "6",
       icon: <LogoutOutlined />,
       label: "Logout",
       onClick: handleLogout,

@@ -18,7 +18,9 @@ import {
   CloudDownloadOutlined,
   ArrowUpOutlined,
   ArrowDownOutlined,
-  PlusOutlined,
+  SaveOutlined,
+  CloseCircleOutlined,
+  EditOutlined,
 } from "@ant-design/icons";
 const EditableCell = ({
   editing,
@@ -281,7 +283,7 @@ const Tablecomponet = ({
                 marginRight: 8,
               }}
             >
-              Save
+              <SaveOutlined style={{ fontSize: 16 }} />
             </Typography.Link>
             <Popconfirm
               title="Sure to cancel?"
@@ -289,7 +291,9 @@ const Tablecomponet = ({
                 setEditingKey("");
               }}
             >
-              <a>Cancel</a>
+              <a>
+                <CloseCircleOutlined style={{ fontSize: 16, marginLeft: 25 }} />
+              </a>
             </Popconfirm>
           </span>
         ) : (
@@ -297,7 +301,7 @@ const Tablecomponet = ({
             disabled={editingKey !== ""}
             onClick={() => edit(record)}
           >
-            Edit
+            <EditOutlined style={{ fontSize: 18, marginLeft: 20 }} />
           </Typography.Link>
         );
       },

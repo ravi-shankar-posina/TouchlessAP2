@@ -1156,7 +1156,7 @@ function App() {
       price: 78.29,
       Amount: 150.58,
       key: 52,
-      status: "Amount Mismatch",
+      status: "Amount-Mismatch",
     },
     {
       poNum: "3165354054",

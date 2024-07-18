@@ -1,0 +1,10 @@
+{
+  "home": "Inicio",
+  "header_items": "Elementos de encabezado",
+  "po_line_items": "Elementos de línea de pedido",
+  "source_data": "Datos fuente",
+  "settings": "Configuración",
+  "logout": "Cerrar sesión",
+  "logout_confirmation": "Confirmación de cierre de sesión",
+  "logout_message": "¿Está seguro de que desea cerrar sesión?"
+}

@@ -1,21 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import abb from "../assets/abb.png";
+import Picture1 from "../assets/Picture1.png";
+import genpact_logo from "../assets/genpact_logo.png";
 import {
   HomeOutlined,
-  FileOutlined,
+  BlockOutlined,
+  FileTextOutlined,
   DatabaseOutlined,
   SettingOutlined,
   LogoutOutlined,
-  FileTextOutlined,
-  BlockOutlined,
 } from "@ant-design/icons";
-import { Layout, Menu, Modal } from "antd";
-// import abb2 from "../assets/abb.png";
+import { Layout, Menu, Modal, Select } from "antd";
+import { useTranslation } from "react-i18next";
 
 const { Sider } = Layout;
 
 const Sidebar = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [logoutModalVisible, setLogoutModalVisible] = useState(false);
   const [collapsed, setCollapsed] = useState(
@@ -29,17 +30,12 @@ const Sidebar = () => {
   };
 
   const confirmLogout = () => {
-    // Clear login status or perform any other logout logic
     localStorage.removeItem("isLogin");
-
-    // Close the modal
     setLogoutModalVisible(false);
-
     navigate("/");
   };
 
   const cancelLogout = () => {
-    // Close the modal without logging out
     setLogoutModalVisible(false);
   };
 
@@ -48,34 +44,38 @@ const Sidebar = () => {
   }, [collapsed]);
 
   const menuItems = [
-    { key: "1", icon: <HomeOutlined />, label: "Home", link: "/home" },
+    { key: "1", icon: <HomeOutlined />, label: t("home"), link: "/home" },
     {
       key: "2",
       icon: <BlockOutlined />,
-      label: "Header Items",
+      label: t("header_items"),
       link: "/headeritem",
     },
     {
       key: "3",
       icon: <FileTextOutlined />,
-      label: "Po Line Items",
+      label: t("po_line_items"),
       link: "/header",
     },
     {
       key: "4",
       icon: <DatabaseOutlined />,
-      label: "Source Data",
+      label: t("source_data"),
       link: "/sourcedata",
     },
-    { key: "5", icon: <SettingOutlined />, label: "Settings", link: "/" },
+    { key: "5", icon: <SettingOutlined />, label: t("settings"), link: "/" },
     {
       key: "6",
       icon: <LogoutOutlined />,
-      label: "Logout",
+      label: t("logout"),
       onClick: handleLogout,
     },
   ];
+  const { i18n } = useTranslation();
 
+  const changeLanguage = (lng) => {
+    i18n.changeLanguage(lng);
+  };
   return (
     <>
       <Layout style={{ minHeight: "98vh" }}>
@@ -96,9 +96,9 @@ const Sidebar = () => {
               }}
             >
               <img
-                src={abb}
+                src={genpact_logo}
                 alt="Logo"
-                style={{ width: "90px", height: "35px", marginTop: "30px" }}
+                style={{ width: "100px", height: "55px", marginTop: "50px" }}
               />
             </div>
           )}
@@ -113,9 +113,9 @@ const Sidebar = () => {
               }}
             >
               <img
-                src={abb}
+                src={genpact_logo}
                 alt="Logo"
-                style={{ width: "45px", height: "15px", marginTop: "50px" }}
+                style={{ width: "85px", height: "45px", marginTop: "40px" }}
               />
             </div>
           )}
@@ -165,17 +165,75 @@ const Sidebar = () => {
               );
             })}
           </Menu>
+          {!collapsed && (
+            <div
+              className="logo"
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                marginBottom: "20px",
+              }}
+            >
+              <img
+                src={Picture1}
+                alt="Logo"
+                style={{ width: "130px", height: "75px", marginTop: "40px" }}
+              />
+            </div>
+          )}
+          {collapsed && (
+            <div
+              className="logo"
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                marginBottom: "20px",
+              }}
+            >
+              <img
+                src={Picture1}
+                alt="Logo"
+                style={{ width: "70px", height: "45px", marginTop: "50px" }}
+              />
+            </div>
+          )}
 
-          {/* Logout Confirmation Modal */}
           <Modal
-            title="Logout Confirmation"
+            title={t("logout_confirmation")}
             visible={logoutModalVisible}
             onOk={confirmLogout}
             onCancel={cancelLogout}
             cancelButtonProps={{ style: { color: "red" } }}
           >
-            <p>Are you sure you want to logout?</p>
+            <p>{t("logout_message")}</p>
           </Modal>
+          {/* 
+          <Select
+            defaultValue="en"
+            style={{ width: 120 }}
+            onChange={changeLanguage}
+            placeholder="Select a Language"
+            options={[
+              {
+                value: "en",
+                label: "English",
+              },
+              {
+                value: "jp",
+                label: "日本語",
+              },
+              {
+                value: "fr",
+                label: "Français",
+              },
+              {
+                value: "es",
+                label: "Español",
+              },
+            ]}
+          /> */}
         </Sider>
 
         <Layout>

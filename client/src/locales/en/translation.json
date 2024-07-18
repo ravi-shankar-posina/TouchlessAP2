@@ -1,0 +1,10 @@
+{
+  "home": "Home",
+  "header_items": "Header Items",
+  "po_line_items": "Po Line Items",
+  "source_data": "Source Data",
+  "settings": "Settings",
+  "logout": "Logout",
+  "logout_confirmation": "Logout Confirmation",
+  "logout_message": "Are you sure you want to logout?"
+}

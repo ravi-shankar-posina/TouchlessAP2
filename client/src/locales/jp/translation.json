@@ -1,0 +1,10 @@
+{
+  "home": "ホーム",
+  "header_items": "ヘッダーアイテム",
+  "po_line_items": "注文行アイテム",
+  "source_data": "ソースデータ",
+  "settings": "設定",
+  "logout": "ログアウト",
+  "logout_confirmation": "ログアウト確認",
+  "logout_message": "ログアウトしてもよろしいですか？"
+}

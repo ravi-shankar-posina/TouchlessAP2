@@ -1,0 +1,10 @@
+{
+  "home": "Accueil",
+  "header_items": "Éléments d'en-tête",
+  "po_line_items": "Éléments de ligne de commande",
+  "source_data": "Données sources",
+  "settings": "Paramètres",
+  "logout": "Déconnexion",
+  "logout_confirmation": "Confirmation de déconnexion",
+  "logout_message": "Êtes-vous sûr de vouloir vous déconnecter ?"
+}

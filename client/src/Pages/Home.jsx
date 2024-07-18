@@ -85,14 +85,14 @@ const Cards = ({ successData: sd, failedData, setCurrentTable }) => {
     setErrorCount(failedData?.length || 0);
   }, [sd, failedData]);
   const chartData = [
-    { name: "AUTO POSTING", value: 56 },
+    { name: "AUTO POSTING", value: 253 },
     { name: "SUCCESS", value: processCount },
     { name: "ERROR", value: errorCount },
 
     // { name: "GR NO", value: 0 }, // You can set a default value for GR NO or fetch it from your data
   ];
   const chartData2 = [
-    { name: "自動投稿", value: 56 },
+    { name: "自動投稿", value: 253 },
     { name: "成功", value: processCount },
     { name: "エラー", value: errorCount },
 
@@ -332,7 +332,7 @@ const ChartsContainer = ({ chartData, chartData2, getColor, getColor2 }) => (
             nameKey="name"
             fill="#8884d8"
             label
-            style={{ fontSize: 12 }}
+            style={{ fontSize: 18 }}
           >
             {chartData.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={getColor(entry.name)} />

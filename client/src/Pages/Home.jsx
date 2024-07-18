@@ -68,6 +68,18 @@ const Cards = ({ successData: sd, failedData, setCurrentTable }) => {
         return "#e63f66"; // Default color
     }
   };
+  const getColor2 = (name) => {
+    switch (name) {
+      case "成功":
+        return "#3fc23d"; // Green for PROCESS #3d67e6
+      case "エラー":
+        return "#ff4747";
+      case "自動投稿":
+        return "#73b5f2"; // Red for ERROR ff4747
+      default:
+        return "#e63f66"; // Default color
+    }
+  };
   useEffect(() => {
     setProcessCount(sd?.length || 0);
     setErrorCount(failedData?.length || 0);
@@ -79,7 +91,13 @@ const Cards = ({ successData: sd, failedData, setCurrentTable }) => {
 
     // { name: "GR NO", value: 0 }, // You can set a default value for GR NO or fetch it from your data
   ];
+  const chartData2 = [
+    { name: "自動投稿", value: 56 },
+    { name: "成功", value: processCount },
+    { name: "エラー", value: errorCount },
 
+    // { name: "GR NO", value: 0 }, // You can set a default value for GR NO or fetch it from your data
+  ];
   return (
     <Layout>
       {/* <div style={{ display: "flex",    }}> */}
@@ -282,14 +300,19 @@ const Cards = ({ successData: sd, failedData, setCurrentTable }) => {
 
         {/* Charts Container */}
 
-        <ChartsContainer chartData={chartData} getColor={getColor} />
+        <ChartsContainer
+          chartData={chartData}
+          chartData2={chartData2}
+          getColor={getColor}
+          getColor2={getColor2}
+        />
       </div>
       {/* </div> */}
     </Layout>
   );
 };
 
-const ChartsContainer = ({ chartData, getColor }) => (
+const ChartsContainer = ({ chartData, chartData2, getColor, getColor2 }) => (
   <div
     style={{
       margin: "65px",
@@ -309,7 +332,7 @@ const ChartsContainer = ({ chartData, getColor }) => (
             nameKey="name"
             fill="#8884d8"
             label
-            style={{ fontSize: 20 }}
+            style={{ fontSize: 12 }}
           >
             {chartData.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={getColor(entry.name)} />
@@ -323,14 +346,14 @@ const ChartsContainer = ({ chartData, getColor }) => (
     {/* Bar Chart */}
     <Card bordered={false} style={{ flex: 1, marginLeft: "50px" }}>
       <ResponsiveContainer width="100%" height={250}>
-        <BarChart data={chartData}>
+        <BarChart data={chartData2}>
           <XAxis dataKey="name" />
           <YAxis />
           <Tooltip />
           <Legend />
           <Bar dataKey="value">
-            {chartData.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={getColor(entry.name)} />
+            {chartData2.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={getColor2(entry.name)} />
             ))}
           </Bar>
         </BarChart>

@@ -85,14 +85,14 @@ const Cards = ({ successData: sd, failedData, setCurrentTable }) => {
     setErrorCount(failedData?.length || 0);
   }, [sd, failedData]);
   const chartData = [
-    { name: "AUTO POSTING", value: 253 },
+    { name: "AUTO POSTING", value: 457 },
     { name: "SUCCESS", value: processCount },
     { name: "ERROR", value: errorCount },
 
     // { name: "GR NO", value: 0 }, // You can set a default value for GR NO or fetch it from your data
   ];
   const chartData2 = [
-    { name: "自動投稿", value: 253 },
+    { name: "自動投稿", value: 457 },
     { name: "成功", value: processCount },
     { name: "エラー", value: errorCount },
 
@@ -103,18 +103,32 @@ const Cards = ({ successData: sd, failedData, setCurrentTable }) => {
       {/* <div style={{ display: "flex",    }}> */}
       <div style={{ width: "100%", height: "95vh", border: "3px solid black" }}>
         {/* Cards Row */}
-        <div
-          style={{
-            padding: "10px",
-            margin: "auto",
-            backgroundClip: "padding-box",
-            fontSize: 20,
-            fontWeight: 600,
-            width: 600,
-            marginBottom: 30,
-          }}
-        >
-          Invoice Verification Dashboard
+        <div style={{ display: "flex", flexDirection: "row" }}>
+          {" "}
+          <div
+            style={{
+              padding: "10px",
+              margin: "auto",
+              backgroundClip: "padding-box",
+              fontSize: 20,
+              fontWeight: 600,
+              width: 600,
+              marginBottom: 30,
+            }}
+          >
+            Invoice Verification Dashboard
+          </div>
+          <span
+            style={{
+              display: "flex",
+              justifyContent: "end",
+              fontSize: 15,
+              marginRight: 10,
+              marginTop: 10,
+            }}
+          >
+            Welcome Chittya
+          </span>
         </div>
         <Row gutter={[16, 16]} justify="center">
           <Col>
@@ -161,7 +175,7 @@ const Cards = ({ successData: sd, failedData, setCurrentTable }) => {
                         fontWeight: 600,
                       }}
                     >
-                      56
+                      457
                     </span>
                     <span style={{ marginLeft: " 10px", marginTop: 2 }}>
                       <ArrowUpOutlined style={{ fontSize: "30px" }} />

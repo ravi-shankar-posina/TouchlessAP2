@@ -22,6 +22,7 @@ import {
   CloseCircleOutlined,
   EditOutlined,
 } from "@ant-design/icons";
+import axios from "axios";
 const EditableCell = ({
   editing,
   dataIndex,
@@ -69,12 +70,12 @@ const Tablecomponet = ({
   currentTable,
   setCurrentTable,
 }) => {
-  console.log("DBdata: ", DBdata);
   const [currentStatus, setCurrentStatus] = useState("");
   const [currentPrice, setCurrentPrice] = useState(0);
   const [editingKey, setEditingKey] = useState("");
   const isEditing = (record) => record.key === editingKey;
   const [form] = Form.useForm();
+  // console.log("DBdata: ", DBdata);
 
   const edit = (record) => {
     form.setFieldsValue({
@@ -89,22 +90,28 @@ const Tablecomponet = ({
   };
 
   const validateData = (poNum, item, qty, amount, status) => {
-    const dbRecord = DBdata.find(
-      (data) => data.poNum === poNum && data.Item === item
-    );
+    if (Array.isArray(DBdata)) {
+      const dbRecord = DBdata.find((data) => {
+        // console.log("Checking record:", data.poNum);
+        return data.poNum === poNum && data.item === item;
+      });
+      // console.log("dbRecord: ", dbRecord);
 
-    if (status === "Qty-Mismatch") {
-      return dbRecord && dbRecord.qty == qty ? true : `Current Quantity`;
-    } else if (status === "Amount-Mismatch") {
-      return dbRecord && dbRecord.Amount == amount ? true : `Current Amount`;
-    } else if (status === "Qty / Amount-Mismatch") {
-      return dbRecord && dbRecord.qty == qty && dbRecord.Amount == amount
-        ? true
-        : `Current Quantity
+      if (status === "Qty-Mismatch") {
+        return dbRecord && dbRecord.qty == qty ? true : `Current Quantity`;
+      } else if (status === "Amount-Mismatch") {
+        return dbRecord && dbRecord.amount == amount ? true : `Current Amount`;
+      } else if (status === "Qty / Amount-Mismatch") {
+        return dbRecord && dbRecord.qty == qty && dbRecord.amount == amount
+          ? true
+          : `Current Quantity
          and Current Amount`;
-    }
+      }
 
-    return true;
+      return true;
+    } else {
+      console.error("pdfData is not an array");
+    }
   };
 
   const save = async (key) => {
@@ -118,9 +125,10 @@ const Tablecomponet = ({
         record.poNum,
         record.Item,
         row.qty,
-        row.Amount,
+        row.amount,
         record.status
       );
+      // console.log("validationMessage: ", validationMessage);
 
       if (validationMessage !== true) {
         message.error(`Provide the ${validationMessage}`);
@@ -132,14 +140,31 @@ const Tablecomponet = ({
         const updatedItem = {
           ...item,
           qty: row.qty !== undefined ? row.qty : item.qty,
-          Amount: row.Amount !== undefined ? row.Amount : item.Amount,
+          amount: row.amount !== undefined ? row.amount : item.amount,
           status: "Successfully Process",
         };
 
-        const filtered = newData.filter((item) => item.key !== key);
-        setFailedData(filtered);
-        setSuccessData((prev) => [...prev, updatedItem]);
-        setEditingKey("");
+        try {
+          const response = await axios.put(
+            `${process.env.REACT_APP_API_URL}/api/updatePdfData/${item._id}`,
+            {
+              qty: row.qty,
+              amount: row.amount,
+              status: "Successfully Process",
+            }
+          );
+
+          if (response.status === 200) {
+            message.success("Document updated successfully");
+            const filtered = newData.filter((item) => item.key !== key);
+            setFailedData(filtered);
+            setSuccessData((prev) => [...prev, updatedItem]);
+            setEditingKey("");
+          }
+        } catch (error) {
+          message.error("Error updating document");
+          console.error("Error updating document:", error);
+        }
       }
     } catch (errInfo) {
       console.log("Validate Failed:", errInfo);
@@ -151,7 +176,7 @@ const Tablecomponet = ({
   };
 
   const handlePdfDownload = (poNumber) => {
-    console.log("poNumber: ", poNumber);
+    // console.log("poNumber: ", poNumber);
     const poToPdfMap = {
       3165354060: invoice,
       3165378098: invoice1,
@@ -159,10 +184,10 @@ const Tablecomponet = ({
       3165378918: invoice3,
       // Add more PO numbers and their corresponding PDF URLs here
     };
-    console.log("poToPdfMap: ", poToPdfMap);
+    // console.log("poToPdfMap: ", poToPdfMap);
 
     const pdfUrl = poToPdfMap[poNumber];
-    console.log("pdfUrl: ", pdfUrl);
+    // console.log("pdfUrl: ", pdfUrl);
 
     if (pdfUrl) {
       const link = document.createElement("a");
@@ -205,8 +230,8 @@ const Tablecomponet = ({
     },
     {
       title: "Amount",
-      dataIndex: "Amount",
-      key: "Amount",
+      dataIndex: "amount",
+      key: "amount",
     },
     {
       title: "Status",
@@ -224,8 +249,8 @@ const Tablecomponet = ({
     },
     {
       title: "Item",
-      dataIndex: "Item",
-      key: "Item",
+      dataIndex: "item",
+      key: "item",
     },
     {
       title: "Material",
@@ -249,8 +274,8 @@ const Tablecomponet = ({
 
     {
       title: "Amount",
-      dataIndex: "Amount",
-      key: "Amount",
+      dataIndex: "amount",
+      key: "amount",
       editable:
         currentStatus === "Amount-Mismatch" ||
         currentStatus === "Qty / Amount-Mismatch",
@@ -330,7 +355,7 @@ const Tablecomponet = ({
     if (!col.editable) {
       return col;
     }
-    console.log("record: ", col);
+    // console.log("record: ", col);
     return {
       ...col,
       onCell: (record) => ({

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Card, Row, Col } from "antd";
 import {
   PieChart,
@@ -21,40 +21,14 @@ import { server } from "../constants";
 import Layout from "../components/Layout";
 import axios from "axios";
 import { Link } from "react-router-dom";
-// const renderCustomizedLabel = ({
-//   cx,
-//   cy,
-//   midAngle,
-//   innerRadius,
-//   outerRadius,
-//   percent,
-//   index,
-// }) => {
-//   const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-//   const x = "";
-//   const y = "";
-//   return (
-//     <text
-//       // x={sd?.length}
-//       // y={failedData?.length}
-//       x={"10"}
-//       y={"50"}
-//       fill="black"
-//       textAnchor={x > cx ? "start" : "end"}
-//       dominantBaseline="central"
-//     >
-//       {`${(percent * 100).toFixed(0)}%`}
-//     </text>
-//   );
-// };
+import { MyContext } from "../components/AuthProvider";
+
 const Cards = ({ successData: sd, failedData, setCurrentTable }) => {
-  console.log("failedData: ", failedData);
-  console.log("sd: ", sd);
   const [processCount, setProcessCount] = useState(0);
   const [errorCount, setErrorCount] = useState(0);
   const [autoPostNo, setAutoPostNo] = useState(0);
   const [poData, setPoData] = useState([]);
-  console.log("poData: ", poData);
+  const { auth } = useContext(MyContext);
 
   const getColor = (name) => {
     switch (name) {
@@ -95,9 +69,17 @@ const Cards = ({ successData: sd, failedData, setCurrentTable }) => {
     { name: "自動投稿", value: 457 },
     { name: "成功", value: processCount },
     { name: "エラー", value: errorCount },
-
+    // { name: "AUTO POSTING", value: 457 },
+    // { name: "SUCCESS", value: processCount },
+    // { name: "ERROR", value: errorCount },
     // { name: "GR NO", value: 0 }, // You can set a default value for GR NO or fetch it from your data
   ];
+
+  const capitalizeFirstLetter = (str) => {
+    if (!str) return "";
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
+  const username = capitalizeFirstLetter(auth.username);
   return (
     <Layout>
       {/* <div style={{ display: "flex",    }}> */}
@@ -127,7 +109,7 @@ const Cards = ({ successData: sd, failedData, setCurrentTable }) => {
               marginTop: 10,
             }}
           >
-            Welcome Chittya
+            Welcome {username} !!
           </span>
         </div>
         <Row gutter={[16, 16]} justify="center">

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Picture1 from "../assets/Picture1.png";
 import genpact_logo from "../assets/genpact_logo.png";
@@ -10,12 +10,15 @@ import {
   SettingOutlined,
   LogoutOutlined,
 } from "@ant-design/icons";
-import { Layout, Menu, Modal, Select } from "antd";
+import { Layout, Menu, Modal } from "antd";
 import { useTranslation } from "react-i18next";
+import { MyContext } from "./AuthProvider";
 
 const { Sider } = Layout;
 
 const Sidebar = () => {
+  const { auth, clearAuth } = useContext(MyContext);
+
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [logoutModalVisible, setLogoutModalVisible] = useState(false);
@@ -32,6 +35,7 @@ const Sidebar = () => {
   const confirmLogout = () => {
     localStorage.removeItem("isLogin");
     setLogoutModalVisible(false);
+    clearAuth();
     navigate("/");
   };
 
@@ -43,7 +47,8 @@ const Sidebar = () => {
     localStorage.setItem("sidebarCollapsed", collapsed);
   }, [collapsed]);
 
-  const menuItems = [
+  // Define menu items for all roles
+  const allMenuItems = [
     { key: "1", icon: <HomeOutlined />, label: t("home"), link: "/home" },
     {
       key: "2",
@@ -55,7 +60,7 @@ const Sidebar = () => {
       key: "3",
       icon: <FileTextOutlined />,
       label: t("po_line_items"),
-      link: "/header",
+      link: "/po-lineitems",
     },
     {
       key: "4",
@@ -63,7 +68,12 @@ const Sidebar = () => {
       label: t("source_data"),
       link: "/sourcedata",
     },
-    { key: "5", icon: <SettingOutlined />, label: t("settings"), link: "/" },
+    {
+      key: "5",
+      icon: <SettingOutlined />,
+      label: "settings",
+      link: "/settings",
+    },
     {
       key: "6",
       icon: <LogoutOutlined />,
@@ -71,11 +81,51 @@ const Sidebar = () => {
       onClick: handleLogout,
     },
   ];
+
+  // Define menu items for users only
+  const userMenuItems = [
+    {
+      key: "1",
+      icon: <BlockOutlined />,
+      label: t("header_items"),
+      link: "/headeritem",
+    },
+    {
+      key: "2",
+      icon: <FileTextOutlined />,
+      label: t("po_line_items"),
+      link: "/po-lineitems",
+    },
+    {
+      key: "3",
+      icon: <LogoutOutlined />,
+      label: t("logout"),
+      onClick: handleLogout,
+    },
+  ];
+
+  // Select menu items based on user role
+  const menuItems =
+    auth.role === "admin" || auth.role === "super-admin"
+      ? allMenuItems
+      : userMenuItems;
+
+  useEffect(() => {
+    // Check if the current location is allowed for the user's role
+    const currentPath = location.pathname;
+    const allowedPaths = menuItems.map((item) => item.link);
+    if (!allowedPaths.includes(currentPath)) {
+      // Redirect to the first allowed path if the current path is not allowed
+      navigate(allowedPaths[0]);
+    }
+  }, [auth, location, menuItems, navigate]);
+
   const { i18n } = useTranslation();
 
   const changeLanguage = (lng) => {
     i18n.changeLanguage(lng);
   };
+
   return (
     <>
       <Layout style={{ minHeight: "98vh" }}>
@@ -115,7 +165,7 @@ const Sidebar = () => {
               <img
                 src={genpact_logo}
                 alt="Logo"
-                style={{ width: "85px", height: "45px", marginTop: "40px" }}
+                style={{ width: "85px", height: "45px", marginTop: "55px" }}
               />
             </div>
           )}
@@ -123,7 +173,7 @@ const Sidebar = () => {
           <br />
           <Menu
             theme="#ffd6e7"
-            defaultSelectedKeys={["1"]}
+            defaultSelectedKeys={[menuItems[0].key]}
             mode="inline"
             style={{ margin: "10px" }}
           >
@@ -165,6 +215,7 @@ const Sidebar = () => {
               );
             })}
           </Menu>
+
           {!collapsed && (
             <div
               className="logo"
@@ -195,7 +246,7 @@ const Sidebar = () => {
               <img
                 src={Picture1}
                 alt="Logo"
-                style={{ width: "70px", height: "45px", marginTop: "50px" }}
+                style={{ width: "70px", height: "45px", marginTop: "60px" }}
               />
             </div>
           )}
@@ -209,29 +260,18 @@ const Sidebar = () => {
           >
             <p>{t("logout_message")}</p>
           </Modal>
-          {/* 
-          <Select
+
+          {/* Uncomment if you want to add language selection */}
+          {/* <Select
             defaultValue="en"
             style={{ width: 120 }}
             onChange={changeLanguage}
             placeholder="Select a Language"
             options={[
-              {
-                value: "en",
-                label: "English",
-              },
-              {
-                value: "jp",
-                label: "日本語",
-              },
-              {
-                value: "fr",
-                label: "Français",
-              },
-              {
-                value: "es",
-                label: "Español",
-              },
+              { value: "en", label: "English" },
+              { value: "jp", label: "日本語" },
+              { value: "fr", label: "Français" },
+              { value: "es", label: "Español" },
             ]}
           /> */}
         </Sider>

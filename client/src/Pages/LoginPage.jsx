@@ -1,8 +1,10 @@
-import React, { useState } from "react";
-import { Form, Input, Button, Row, Col, Typography } from "antd";
+import React, { useContext, useState } from "react";
+import { Form, Input, Button, Typography } from "antd";
 import { useNavigate } from "react-router-dom";
-import Tail from "../assets/tai.png";
+import axios from "axios";
+import Picture1 from "../assets/Picture1.png";
 import bg from "../assets/bg.jpeg";
+import { MyContext } from "../components/AuthProvider";
 
 const { Title } = Typography;
 
@@ -10,49 +12,99 @@ const LoginPage = () => {
   const [form] = Form.useForm();
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { auth, setAuth } = useContext(MyContext);
 
-  const handleSubmit = (values) => {
-    // Custom validation for a specific username and password
-    const expectedUsername = "tail@gmail.com";
-    const expectedPassword = "1234567890";
+  const handleSubmit = async (values) => {
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_URL}/api/login`,
+        {
+          email: values.email,
+          password: values.password,
+        }
+      );
 
-    if (
-      values.username === expectedUsername &&
-      values.password === expectedPassword
-    ) {
-      // Successful login, navigate to another component
+      if (response.data.success) {
+        const loginDetails = {
+          username: response.data.data.username,
+          token: response.data.token,
+          role: response.data.data.role,
+          vendor: response.data.data.vendor,
+        };
+        console.log("response: ", response);
 
-      localStorage.setItem("isLogin", JSON.stringify(expectedUsername));
-      navigate("/home");
-    } else {
-      // Invalid credentials, show an error message
-      setError("Invalid username or password");
+        // Save login details to localStorage
+        localStorage.setItem("isLogin", JSON.stringify(loginDetails));
+
+        // Set auth context
+        setAuth(loginDetails);
+
+        // Redirect to home page
+        navigate("/home");
+      } else {
+        setError(response.data.message || "Invalid username or password");
+      }
+    } catch (error) {
+      setError("An error occurred. Please try again.");
     }
   };
 
   return (
     <div
       style={{
-        backgroundImage: `url(${bg})`,
-        backgroundSize: "cover",
-        height: "100vh",
+        // backgroundImage: `url(${bg})`,
+        // backgroundSize: "cover",
+        backgroundPosition: "center",
+        // height: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        // alignItems: "center",
+        marginTop: 120,
       }}
     >
-      <Row justify="space-around" align="middle" style={{ height: "100vh" }}>
-        <Col span={8} style={{ padding: "50px" }}>
-          <Title level={2}>Login Page</Title>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          backgroundColor: "#efefef",
+          padding: "20px",
+          borderRadius: "10px",
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+          maxWidth: "100%",
+          width: "450px",
+          height: "550px",
+        }}
+      >
+        <img
+          src={Picture1}
+          alt="AI Labs Logo"
+          style={{
+            height: "120px",
+            width: "auto",
+            marginBottom: "20px",
+          }}
+        />
+        <span
+          style={{
+            fontSize: 20,
+            color: "#575757",
+            marginBottom: "40px",
+          }}
+        >
+          Signin here...
+        </span>
+        <div style={{ width: 400 }}>
           <Form
             form={form}
             onFinish={handleSubmit}
-            style={{ width: "400px" }}
+            style={{ width: "100%" }}
             layout="vertical"
           >
             <Form.Item
-              label="Username"
-              name="username"
-              rules={[
-                { required: true, message: "Please enter your username" },
-              ]}
+              label="Email"
+              name="email"
+              rules={[{ required: true, message: "Please enter your email" }]}
             >
               <Input />
             </Form.Item>
@@ -66,42 +118,28 @@ const LoginPage = () => {
             >
               <Input.Password />
             </Form.Item>
-            <Form.Item
-              label="Profile"
-              name="Profile"
-              rules={[{ required: true, message: "Please enter your profile" }]}
-            >
-              <Input />
-            </Form.Item>
 
             {error && <p style={{ color: "red" }}>{error}</p>}
-
             <Form.Item>
-              <a href="#" style={{ color: "blue", marginBottom: "10px" }}>
+              <Button
+                type="primary"
+                htmlType="submit"
+                style={{ width: "100%", marginTop: 20 }}
+              >
+                Signin
+              </Button>
+            </Form.Item>
+            <Form.Item>
+              <a
+                href="#"
+                style={{ color: "blue", display: "block", textAlign: "center" }}
+              >
                 Forgot Password?
               </a>
             </Form.Item>
-
-            <Form.Item></Form.Item>
           </Form>
-        </Col>
-        <Button
-          // type="primary"
-          // htmlType="submit"
-          // style={{ borderRadius: "11px" }}
-          // color="blue"
-        >
-          Submit
-        </Button>
-
-        <Col span={8} style={{ padding: "30px" }}>
-          <img
-            src={Tail}
-            alt="AI Labs Logo"
-            style={{ height: "120px", width: "100%", marginTop: "0%" }}
-          />
-        </Col>
-      </Row>
+        </div>
+      </div>
     </div>
   );
 };

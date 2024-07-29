@@ -1,5 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const jwt = require("jsonwebtoken");
 const { simpleParser } = require("mailparser");
 const pdf = require("pdf-parse");
 const Imap = require("imap");
@@ -7,11 +8,14 @@ const cors = require("cors");
 const fs = require("fs");
 const path = require("path");
 const mongoose = require("mongoose");
+const { error } = require("console");
 const { ObjectId } = mongoose.Types;
-
+const bcrypt = require("bcrypt");
 const app = express();
 app.use(cors({}));
-const PORT = 3001;
+const PORT = 5005;
+
+require("dotenv").config();
 
 const buildpath = path.join(__dirname, "../client/build");
 app.use(express.static(buildpath));
@@ -71,6 +75,147 @@ app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ success: false, error: "Internal Server Error" });
 });
+app.post("/api/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Missing credentials" });
+  }
+
+  try {
+    const dbo = await connect();
+    const collection = dbo.collection("users");
+
+    // Find the user with the given email
+    const user = await collection.findOne({ email: email });
+
+    if (user) {
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (isMatch) {
+        // Successful login, create token payload
+        const payload = {
+          user: {
+            id: user._id,
+            email: user.email,
+            role: user.role, // Assuming you have a role field in your user schema
+          },
+        };
+
+        // Sign the token
+        jwt.sign(
+          payload,
+          process.env.JWT_SECRET,
+          { expiresIn: "1h" },
+          (err, token) => {
+            if (err) throw err;
+            res.json({
+              success: true,
+              message: "Login successful",
+              token: token,
+              data: user,
+            });
+          }
+        );
+
+        return;
+      }
+    }
+
+    // Invalid credentials
+    return res
+      .status(401)
+      .json({ success: false, message: "Invalid username or password" });
+  } catch (error) {
+    console.error(error.message);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error" });
+  }
+});
+app.get("/api/getUsers", async (req, res) => {
+  try {
+    const dbo = await connect();
+    const collection = dbo.collection("users");
+    const data = await collection.find({}).toArray();
+    res.status(200).json(data);
+  } catch (err) {
+    console.log(error.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+app.put("/api/updatePdfData/:id", async (req, res) => {
+  const { id } = req.params;
+  const { qty, amount, status } = req.body;
+
+  try {
+    const dbo = await connect();
+    const collection = dbo.collection("pdfdata");
+    const pdfData = await collection.findOne({ _id: new ObjectId(id) });
+    if (!pdfData) {
+      return res.status(404).json({ message: "Document not found" });
+    }
+
+    // Update fields conditionally
+    if (qty !== undefined) {
+      pdfData.qty = qty;
+    }
+    if (status !== undefined) {
+      pdfData.status = status;
+    }
+    if (amount !== undefined) {
+      pdfData.amount = amount;
+    }
+
+    // Save the updated document
+    await collection.updateOne({ _id: new ObjectId(id) }, { $set: pdfData });
+
+    res.status(200).json({ message: "Document updated successfully", pdfData });
+  } catch (error) {
+    console.log("error: ", error.message);
+    res.status(500).json({ message: "Error updating document", error });
+  }
+});
+app.post("/api/registerUser", async (req, res) => {
+  try {
+    const { email, password, role, username, vendor } = req.body;
+    const dbo = await connect();
+    const collection = dbo.collection("users");
+
+    // Check if the user already exists
+    const existingUser = await collection.findOne({ email: email });
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: "User already exists",
+      });
+    }
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Insert the new user
+    await collection.insertOne({
+      email,
+      password: hashedPassword,
+      role,
+      username,
+      vendor,
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "User registered successfully",
+    });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+});
 
 app.post("/api/postPodata/:poid", async (req, res) => {
   try {
@@ -106,214 +251,69 @@ app.get("/api/getPodata", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-app.post("/api/parse-emails", async (req, res, next) => {
-  const imapConfig = {
-    user: req.body.user,
-    password: req.body.password,
-    host: req.body.host,
-    port: req.body.port,
-    tls: req.body.tls,
-  };
 
+app.post("/api/postHeaderItems", async (req, res) => {
   try {
-    const imap = new Imap(imapConfig);
-    imap.once("ready", () => {
-      imap.openBox("INBOX", false, () => {
-        imap.search(["UNSEEN", ["SINCE", new Date()]], (err, results) => {
-          if (err) {
-            return next(err);
-          }
-
-          if (results.length === 0) {
-            res.json({ success: true, message: "No new messages to fetch" });
-            imap.end();
-            return;
-          }
-
-          const f = imap.fetch(results, { bodies: "" });
-          let attachmentsCount = 0;
-
-          f.on("message", (msg) => {
-            let senderEmail;
-            let attachmentsData = [];
-            msg.on("body", (stream) => {
-              simpleParser(stream, async (err, parsed) => {
-                const { attachments, from } = parsed;
-
-                senderEmail = "ChittyaRanjan.Bej@genpact.com";
-                // from.value[0].address;
-
-                if (Array.isArray(attachments) && attachments.length > 0) {
-                  console.log(`Number of attachments: ${attachments.length}`);
-                  attachmentsCount += attachments.length;
-
-                  for (let i = 0; i < attachments.length; i++) {
-                    const currentAttachment = attachments[i];
-
-                    if (currentAttachment.contentType === "application/pdf") {
-                      const pdfBuffer = currentAttachment.content;
-                      try {
-                        const data = await pdf(pdfBuffer);
-                        const pdfText = data.text;
-
-                        const jsonFromText = parseTextToJSON(pdfText);
-
-                        fs.writeFile("attachment.pdf", pdfBuffer, (err) => {
-                          if (err) {
-                            console.error("Error writing PDF file:", err);
-                            res.status(500).json({
-                              success: false,
-                              error: "Error writing PDF file",
-                            });
-                            return;
-                          } else {
-                            console.log(
-                              "PDF file has been successfully created."
-                            );
-                          }
-                        });
-
-                        attachmentsData.push({
-                          ...jsonFromText,
-                          pdfBuffer: pdfBuffer.toString("base64"),
-                          senderEmail,
-                          attachmentsCount,
-                        });
-
-                        if (i === attachments.length - 1) {
-                          const dbo = await connect();
-                          await dbo
-                            .collection("orderdetails")
-                            .insertMany(attachmentsData);
-                        }
-                      } catch (jsonError) {
-                        res.status(500).json({
-                          success: false,
-                          error: jsonError.message,
-                        });
-                      }
-                    } else {
-                      res.status(400).json({
-                        success: false,
-                        error: "Attachment is not a PDF",
-                      });
-                    }
-                  }
-                } else {
-                  attachmentsCount = 0;
-                  console.log(senderEmail);
-                  const dbo = await connect();
-                  const OrderDetails = dbo.collection("orderdetails");
-                  await OrderDetails.insertOne({
-                    companyName: "",
-                    po_number: "",
-                    quantity: "",
-                    Amount: "",
-                    pdfBuffer: "",
-                    senderEmail,
-                    attachmentsCount,
-                  });
-                }
-              });
-            });
-
-            msg.once("attributes", (attrs) => {
-              const { uid } = attrs;
-              imap.addFlags(uid, ["\\Seen"], () => {
-                console.log("Marked as read!");
-              });
-            });
-          });
-
-          f.once("error", (ex) => {
-            console.log(ex.message);
-            res.status(500).json({ success: false, error: ex.message });
-          });
-
-          f.once("end", () => {
-            console.log("Done fetching all messages!");
-            imap.end();
-          });
-        });
-      });
-    });
-
-    imap.once("error", (err) => {
-      console.log(err);
-      res.status(500).json({ success: false, error: err.message });
-    });
-
-    imap.once("end", () => {
-      console.log("Connection ended");
-    });
-
-    imap.connect();
-  } catch (ex) {
-    res.status(500).json({ success: false, error: ex.message });
-  }
-});
-
-// POST API to fetch data based on a filter
-app.post("/api/getXlData", async (req, res) => {
-  try {
-    const { poNum } = req.body; // Extract ponumber from request body
-    console.log("poNum: ", poNum);
-    if (!poNum) {
-      return res
-        .status(400)
-        .json({ success: false, error: "ponumber is required" });
-    }
-
     const dbo = await connect();
-    const filter = { poNum }; // Construct the filter object
-    const orders = await dbo.collection("xlData").find(filter).toArray();
+    const collection = dbo.collection("xldata");
 
-    res.status(200).json({
-      success: true,
-      data: orders,
+    const data = req.body;
+
+    // Insert data into the collection
+    const result = await collection.insertMany(data);
+
+    res.status(201).json({
+      message: "Data inserted successfully",
+      insertedCount: result.insertedCount,
+      insertedIds: result.insertedIds,
     });
   } catch (error) {
-    console.error("Error fetching order data:", error);
-    res.status(500).json({ success: false, error: "Internal Server Error" });
+    console.error(error.message);
+    res.status(500).json({ message: "An error occurred while inserting data" });
   }
 });
-app.post("/api/getPdfData", async (req, res) => {
+app.get("/api/getHeaderItems", async (req, res) => {
   try {
-    const { poNum } = req.body; // Extract po number from request body
-    if (!poNum) {
-      return res
-        .status(400)
-        .json({ success: false, error: "PO number is required" });
-    }
-
     const dbo = await connect();
-    const filter = { poNum }; // Construct the filter object
-    const orders = await dbo.collection("pdfData").find(filter).toArray();
-
-    res.status(200).json({
-      success: true,
-      data: orders,
-    });
-  } catch (error) {
-    console.error("Error fetching order data:", error);
-    res.status(500).json({ success: false, error: "Internal Server Error" });
+    const collection = dbo.collection("headeritems");
+    const data = await collection.find({}).toArray();
+    res.status(200).json(data);
+  } catch (err) {
+    console.log(error.message);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
-const orderItemSchema = new mongoose.Schema({
-  Product: String,
-  LineItem: String,
-  Qty: Number,
-  Amount: Number,
-  Tax: Number,
-  Total: Number,
+//get pdf data and xl data
+app.get("/api/getPdfData", async (req, res) => {
+  try {
+    const dbo = await connect();
+    const collection = dbo.collection("pdfdata");
+    const data = await collection.find({}).toArray();
+    // Ensure the response is an array
+    if (Array.isArray(data)) {
+      res.status(200).json(data);
+    } else {
+      res.status(500).json({ error: "Data format error" });
+    }
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 });
-
-const orderDetailSchema = new mongoose.Schema({
-  CompanyName: String,
-  PO_Number: String,
-  Items: [orderItemSchema],
-  senderEmail: String,
-  pdfBuffer: String,
+//get pdf data and xl data
+app.get("/api/getXlData", async (req, res) => {
+  try {
+    const dbo = await connect();
+    const collection = dbo.collection("xldata");
+    const data = await collection.find({}).toArray();
+    // Ensure the response is an array
+    if (Array.isArray(data)) {
+      res.status(200).json(data);
+    } else {
+      res.status(500).json({ error: "Data format error" });
+    }
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 });
-
-const OrderDetail = mongoose.model("OrderDetail", orderDetailSchema);

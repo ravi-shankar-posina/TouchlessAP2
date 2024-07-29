@@ -13,7 +13,7 @@ const { ObjectId } = mongoose.Types;
 const bcrypt = require("bcrypt");
 const app = express();
 app.use(cors({}));
-const PORT = 5005;
+const PORT = 3001;
 
 require("dotenv").config();
 

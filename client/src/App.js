@@ -1,18 +1,23 @@
+import React, { useContext, useEffect, useState } from "react";
 import "./App.css";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import { Spin } from "antd";
+import axios from "axios";
+
 import LoginPage from "./Pages/LoginPage";
 import Cards from "./Pages/Home";
-import Process from "./Pages/Process";
 import Settings from "./Pages/Settings";
-
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import InputPage from "./Pages/InputPage";
-import { POProvider } from "./Pages/POContext";
-import { useContext, useEffect, useState } from "react";
-import { Spin } from "antd";
 import SourceData from "./Pages/SourceData";
 import HeaderItem from "./Pages/HeaderItem";
 import PoLineItems from "./Pages/PoLineItems";
-import axios from "axios";
+
+import { POProvider } from "./Pages/POContext";
 import { MyContext } from "./components/AuthProvider";
 
 function App() {
@@ -57,7 +62,6 @@ function App() {
   }, []);
 
   useEffect(() => {
-    // Ensure auth, DBdata, and PDFdata are valid before processing
     if (!auth || !Array.isArray(DBdata) || !Array.isArray(PDFdata)) {
       return;
     }
@@ -65,19 +69,15 @@ function App() {
     let filteredPoNumbers;
 
     if (auth.role === "admin" || auth.role === "super admin") {
-      // If the role is admin or super admin, show all poNumbers
       filteredPoNumbers = poNumber;
     } else if (auth.role === "user" && auth.vendor) {
-      // If the role is user and vendor is defined, filter the poNumbers based on vendor
       const vendorToPoNumberMap = {
         1800001463: [3165378098, 3165378198],
         1800001473: [3165378918],
-        // Add more vendor to poNumber mappings as needed
       };
 
       filteredPoNumbers = vendorToPoNumberMap[auth.vendor] || [];
     } else {
-      // Handle other roles or missing vendor
       filteredPoNumbers = [];
     }
 
@@ -121,33 +121,53 @@ function App() {
                 <Route
                   path="/home"
                   element={
-                    <Cards
-                      successData={successData}
-                      setCurrentTable={setCurrentTable}
-                      failedData={failedData}
-                    />
+                    auth ? (
+                      <Cards
+                        successData={successData}
+                        setCurrentTable={setCurrentTable}
+                        failedData={failedData}
+                      />
+                    ) : (
+                      <Navigate to="/" />
+                    )
                   }
                 />
                 <Route
                   path="/po-lineitems"
                   element={
-                    <PoLineItems
-                      successData={successData}
-                      setSuccessData={setSuccessData}
-                      setCurrentTable={setCurrentTable}
-                      failedData={failedData}
-                      setFailedData={setFailedData}
-                      PDFdata={PDFdata}
-                      setPDFdata={setPDFdata}
-                      DBdata={DBdata}
-                      setDBdata={setDBdata}
-                    />
+                    auth ? (
+                      <PoLineItems
+                        successData={successData}
+                        setSuccessData={setSuccessData}
+                        setCurrentTable={setCurrentTable}
+                        failedData={failedData}
+                        setFailedData={setFailedData}
+                        PDFdata={PDFdata}
+                        setPDFdata={setPDFdata}
+                        DBdata={DBdata}
+                        setDBdata={setDBdata}
+                      />
+                    ) : (
+                      <Navigate to="/" />
+                    )
                   }
                 />
-                <Route path="/settings" element={<Settings />} />
-                <Route path="/ponumber" element={<InputPage />} />
-                <Route path="/sourcedata" element={<SourceData />} />
-                <Route path="/headeritem" element={<HeaderItem />} />
+                <Route
+                  path="/settings"
+                  element={auth ? <Settings /> : <Navigate to="/" />}
+                />
+                <Route
+                  path="/upload"
+                  element={auth ? <InputPage /> : <Navigate to="/" />}
+                />
+                <Route
+                  path="/sourcedata"
+                  element={auth ? <SourceData /> : <Navigate to="/" />}
+                />
+                <Route
+                  path="/headeritem"
+                  element={auth ? <HeaderItem /> : <Navigate to="/" />}
+                />
               </Routes>
             </div>
           </div>

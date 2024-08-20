@@ -70,6 +70,7 @@ const Tablecomponet = ({
   currentTable,
   setCurrentTable,
 }) => {
+  console.log("successData: ", successData);
   const [currentStatus, setCurrentStatus] = useState("");
   const [currentPrice, setCurrentPrice] = useState(0);
   const [editingKey, setEditingKey] = useState("");
@@ -210,7 +211,7 @@ const Tablecomponet = ({
     },
     {
       title: "Item",
-      dataIndex: "Item",
+      dataIndex: "item",
       key: "Item",
     },
     {

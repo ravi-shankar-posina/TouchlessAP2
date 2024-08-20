@@ -44,11 +44,11 @@ const Cards = ({ successData: sd, failedData, setCurrentTable }) => {
   };
   const getColor2 = (name) => {
     switch (name) {
-      case "成功":
+      case "SUCCESS":
         return "#3fc23d"; // Green for PROCESS #3d67e6
-      case "エラー":
+      case "ERROR":
         return "#ff4747";
-      case "自動投稿":
+      case "AUTO POSTING":
         return "#73b5f2"; // Red for ERROR ff4747
       default:
         return "#e63f66"; // Default color
@@ -66,9 +66,9 @@ const Cards = ({ successData: sd, failedData, setCurrentTable }) => {
     // { name: "GR NO", value: 0 }, // You can set a default value for GR NO or fetch it from your data
   ];
   const chartData2 = [
-    { name: "自動投稿", value: 457 },
-    { name: "成功", value: processCount },
-    { name: "エラー", value: errorCount },
+    { name: "AUTO POSTING", value: 457 },
+    { name: "SUCCESS", value: processCount },
+    { name: "ERROR", value: errorCount },
     // { name: "AUTO POSTING", value: 457 },
     // { name: "SUCCESS", value: processCount },
     // { name: "ERROR", value: errorCount },

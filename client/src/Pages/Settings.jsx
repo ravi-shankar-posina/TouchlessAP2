@@ -14,11 +14,13 @@ import Layout from "../components/Layout";
 import axios from "axios";
 import { PlusOutlined } from "@ant-design/icons";
 const { Option } = Select;
-
 function Settings() {
   const [form] = Form.useForm();
   const [userData, setUserData] = useState("");
+  const [loading, setLoading] = useState(true);
+
   const handleSubmit = async (values) => {
+    setLoading(true);
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_API_URL}/api/registerUser`,
@@ -41,18 +43,27 @@ function Settings() {
       } else {
         message.error("Error: " + error.message);
       }
+    } finally {
+      setLoading(false);
     }
     getUser();
     setIsModalOpen(false);
   };
 
-  const getUser = async (values) => {
-    const res = await axios.get(
-      `${process.env.REACT_APP_API_URL}/api/getusers`,
-      {}
-    );
-    setUserData(res.data);
+  const getUser = async () => {
+    setLoading(true); // Set loading to true when fetching data
+    try {
+      const res = await axios.get(
+        `${process.env.REACT_APP_API_URL}/api/getusers`
+      );
+      setUserData(res.data);
+    } catch (error) {
+      message.error("Failed to fetch user data.");
+    } finally {
+      setLoading(false); // Set loading to false after data is fetched
+    }
   };
+
   useEffect(() => {
     getUser();
   }, []);
@@ -106,6 +117,7 @@ function Settings() {
             bordered
             dataSource={userData}
             columns={columns}
+            loading={loading}
           />
         </div>
         <Modal open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>

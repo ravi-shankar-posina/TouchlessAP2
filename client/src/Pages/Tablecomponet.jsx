@@ -1,10 +1,12 @@
 import {
-  Button,
+  Modal,
   Form,
+  Button,
   Input,
   InputNumber,
   Popconfirm,
   Table,
+  Tooltip,
   Typography,
   message,
 } from "antd";
@@ -21,6 +23,7 @@ import {
   SaveOutlined,
   CloseCircleOutlined,
   EditOutlined,
+  CommentOutlined,
 } from "@ant-design/icons";
 import axios from "axios";
 const EditableCell = ({
@@ -70,12 +73,15 @@ const Tablecomponet = ({
   currentTable,
   setCurrentTable,
 }) => {
-  console.log("successData: ", successData);
   const [currentStatus, setCurrentStatus] = useState("");
   const [currentPrice, setCurrentPrice] = useState(0);
   const [editingKey, setEditingKey] = useState("");
   const isEditing = (record) => record.key === editingKey;
   const [form] = Form.useForm();
+
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [currentRecord, setCurrentRecord] = useState(null);
+  const [comment, setComment] = useState("");
   // console.log("DBdata: ", DBdata);
 
   const edit = (record) => {
@@ -89,11 +95,34 @@ const Tablecomponet = ({
     setCurrentStatus(record.status);
     setEditingKey(record.key);
   };
+  // Function to handle comment click
+  const handleComment = (record) => {
+    setCurrentRecord(record); // Set the record to be used in the modal
+    setIsModalVisible(true); // Show the modal
+  };
+
+  // Function to handle OK button in modal
+  const handleOk = () => {
+    console.log("Comment for record:", currentRecord?.key, "is:", comment);
+    // Process comment data here, such as saving to a server
+
+    setIsModalVisible(false); // Hide the modal
+    setComment(""); // Clear comment input
+  };
+
+  // Function to handle Cancel button in modal
+  const handleCancel = () => {
+    setIsModalVisible(false); // Hide the modal
+  };
+
+  // Function to handle comment change in form
+  const handleCommentChange = (e) => {
+    setComment(e.target.value);
+  };
 
   const validateData = (poNum, item, qty, amount, status) => {
     if (Array.isArray(DBdata)) {
       const dbRecord = DBdata.find((data) => {
-        // console.log("Checking record:", data.poNum);
         return data.poNum === poNum && data.item === item;
       });
       // console.log("dbRecord: ", dbRecord);
@@ -124,7 +153,7 @@ const Tablecomponet = ({
 
       const validationMessage = validateData(
         record.poNum,
-        record.Item,
+        record.item,
         row.qty,
         row.amount,
         record.status
@@ -300,22 +329,19 @@ const Tablecomponet = ({
       dataIndex: "action",
       key: "action",
       render: (_, record) => {
-        const editable = isEditing(record);
+        const editable = isEditing(record); // Assuming isEditing function is defined elsewhere
+
         return editable ? (
           <span>
             <Typography.Link
-              onClick={() => save(record.key)}
-              style={{
-                marginRight: 8,
-              }}
+              onClick={() => save(record.key)} // Assuming save function is defined elsewhere
+              style={{ marginRight: 8 }}
             >
               <SaveOutlined style={{ fontSize: 16 }} />
             </Typography.Link>
             <Popconfirm
               title="Sure to cancel?"
-              onConfirm={() => {
-                setEditingKey("");
-              }}
+              onConfirm={() => setEditingKey("")} // Assuming setEditingKey function is defined elsewhere
             >
               <a>
                 <CloseCircleOutlined style={{ fontSize: 16, marginLeft: 25 }} />
@@ -323,15 +349,25 @@ const Tablecomponet = ({
             </Popconfirm>
           </span>
         ) : (
-          <Typography.Link
-            disabled={editingKey !== ""}
-            onClick={() => edit(record)}
-          >
-            <EditOutlined style={{ fontSize: 18, marginLeft: 20 }} />
-          </Typography.Link>
+          <span>
+            <Typography.Link
+              disabled={editingKey !== ""} // Assuming editingKey state is defined elsewhere
+              onClick={() => edit(record)} // Assuming edit function is defined elsewhere
+            >
+              <EditOutlined style={{ fontSize: 18, marginLeft: 20 }} />
+            </Typography.Link>
+            <Tooltip title="Add Comment" placement="top">
+              <Typography.Link
+                style={{ marginLeft: 20 }}
+                onClick={() => handleComment(record)}
+              >
+                <CommentOutlined style={{ fontSize: 18 }} />
+              </Typography.Link>
+            </Tooltip>
+          </span>
         );
       },
-      width: 130,
+      width: 180,
     },
     {
       title: "Document",
@@ -390,6 +426,31 @@ const Tablecomponet = ({
   }
   return (
     <div>
+      <Modal
+        title={`Comment for Record ${currentRecord?.key}`}
+        visible={isModalVisible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        footer={[
+          <Button key="back" onClick={handleCancel}>
+            Cancel
+          </Button>,
+          <Button key="submit" type="primary" onClick={handleOk}>
+            Submit
+          </Button>,
+        ]}
+      >
+        <Form>
+          <Form.Item>
+            <Input.TextArea
+              rows={4}
+              value={comment}
+              onChange={handleCommentChange}
+              placeholder="Enter your comment here..."
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
       <div
         style={{
           display: "flex",
@@ -430,8 +491,13 @@ const Tablecomponet = ({
         Date: {dateString}
       </span>
       {currentTable === "Success" ? (
-        <div>
-          <Table dataSource={successData} columns={successColumns} />
+        <div style={{ height: "screen" }}>
+          <Table
+            dataSource={successData}
+            columns={successColumns}
+            pagination
+            scroll={{ y: 600 }}
+          />
         </div>
       ) : (
         <div>

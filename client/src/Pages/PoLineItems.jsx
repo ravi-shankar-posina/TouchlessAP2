@@ -16,7 +16,6 @@ const PoLineItems = ({
   PDFdata,
   setPDFdata,
 }) => {
-  console.log("successData: ", successData);
   const [myres, setMyres] = useState([]);
   const [headerData, setHeaderData] = useState([]);
   const [pdfVisible, setPdfVisible] = useState(false);

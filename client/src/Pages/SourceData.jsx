@@ -1,11 +1,78 @@
-import React, { useEffect, useState } from "react";
-import { Button, Table } from "antd";
-import Layout from "../components/Layout";
+import React, { useEffect, useRef, useState } from "react";
 
+import Layout from "../components/Layout";
+import { Button, Input, Space, Table } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
+import Highlighter from "react-highlight-words";
 const SourceData = () => {
   const [currentTable, setCurrentTable] = useState("PO Header");
+  const [dateString, setDateString] = useState(getFormattedDate());
+  const [loading, setLoading] = useState(false);
+  const [searchText, setSearchText] = useState({});
+  const [searchedColumn, setSearchedColumn] = useState("");
+  const searchInput = useRef(null);
 
-  // Define your table data and columns for each type
+  const handleSearch = (selectedKeys, confirm, dataIndex) => {
+    confirm();
+    setSearchText(selectedKeys[0]);
+    setSearchedColumn(dataIndex);
+  };
+
+  const handleReset = (clearFilters) => {
+    clearFilters();
+    setSearchText("");
+  };
+
+  const getColumnSearchProps = (dataIndex) => ({
+    filterDropdown: ({
+      setSelectedKeys,
+      selectedKeys,
+      confirm,
+      clearFilters,
+    }) => (
+      <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
+        <Input
+          ref={searchInput}
+          placeholder={`Search ${dataIndex}`}
+          value={selectedKeys[0]}
+          onChange={(e) => {
+            const value = e.target.value;
+            setSelectedKeys(value ? [value] : []);
+            if (!value) {
+              handleReset(clearFilters);
+            }
+          }}
+          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+          style={{ marginBottom: 8, display: "block" }}
+        />
+      </div>
+    ),
+    filterIcon: (filtered) => (
+      <SearchOutlined style={{ color: filtered ? "#1677ff" : undefined }} />
+    ),
+    onFilter: (value, record) =>
+      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilterDropdownOpenChange: (visible) => {
+      if (!visible) {
+        setSearchText(""); // Reset the search text when dropdown closes
+        setSearchedColumn(null); // Optionally reset the searched column
+      } else {
+        setTimeout(() => searchInput.current?.select(), 100);
+      }
+    },
+    render: (text) =>
+      searchedColumn === dataIndex ? (
+        <Highlighter
+          highlightStyle={{ backgroundColor: "#ffc069", padding: 0 }}
+          searchWords={[searchText]}
+          autoEscape
+          textToHighlight={text ? text.toString() : ""}
+        />
+      ) : (
+        text
+      ),
+  });
+
   const dataSourcePOHeader = [
     {
       poNumber: "3165378098",
@@ -566,31 +633,37 @@ const SourceData = () => {
       dataIndex: "poNumber",
       key: "poNumber",
       title: "PO Number",
+      ...getColumnSearchProps("poNumber"),
     },
     {
       dataIndex: "item",
       key: "item",
       title: "Item",
+      ...getColumnSearchProps("item"),
     },
     {
       dataIndex: "material",
       key: "material",
       title: "Material",
+      ...getColumnSearchProps("material"),
     },
     {
       dataIndex: "qty",
       key: "qty",
       title: "Quantity",
+      ...getColumnSearchProps("qty"),
     },
     {
       dataIndex: "price",
       key: "price",
       title: "Price",
+      ...getColumnSearchProps("price"),
     },
     {
       dataIndex: "amount",
       key: "amount",
       title: "Amount",
+      ...getColumnSearchProps("amount"),
     },
   ];
 
@@ -1051,11 +1124,9 @@ const SourceData = () => {
       title: "Quantity",
     },
   ];
-
   const handleButtonClick = (tableName) => {
     setCurrentTable(tableName);
   };
-  const [dateString, setDateString] = useState(getFormattedDate());
 
   useEffect(() => {
     const interval = setInterval(() => {

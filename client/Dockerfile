@@ -1,8 +1,20 @@
 # Stage 1: Build the React app
-FROM node:20-alpine AS builder
+FROM ubuntu:20.04 AS builder
 
 # Install build dependencies
-RUN apk add --no-cache python3 make g++ libcairo-dev libjpeg-turbo-dev pango-dev giflib-dev
+RUN apt-get update && \
+    apt-get install -y \
+    python3 \
+    build-essential \
+    libcairo2-dev \
+    libjpeg-dev \
+    libpango1.0-dev \
+    libgif-dev \
+    curl
+
+# Install Node.js and npm
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs
 
 # Set the working directory
 WORKDIR /app
@@ -20,7 +32,11 @@ COPY . .
 RUN npm run build
 
 # Stage 2: Serve the React app
-FROM node:20-alpine
+FROM ubuntu:20.04
+
+# Install Node.js and npm
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs
 
 # Set the working directory
 WORKDIR /app

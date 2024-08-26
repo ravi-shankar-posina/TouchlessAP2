@@ -1,6 +1,9 @@
 # Stage 1: Build the React app
 FROM ubuntu:20.04 AS builder
 
+# Set environment variables to avoid interactive prompts during build
+ENV DEBIAN_FRONTEND=noninteractive
+
 # Install build dependencies
 RUN apt-get update && \
     apt-get install -y \
@@ -33,6 +36,9 @@ RUN npm run build
 
 # Stage 2: Serve the React app
 FROM ubuntu:20.04
+
+# Set environment variables to avoid interactive prompts during build
+ENV DEBIAN_FRONTEND=noninteractive
 
 # Install Node.js and npm
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \

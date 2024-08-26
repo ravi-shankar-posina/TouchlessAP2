@@ -16,11 +16,11 @@ services:
       context: ./server
     container_name: backend
     ports:
-      - 5000:5000
+      - 3001:3001
 
   frontend:
     build:
       context: ./client
     container_name: frontend
     ports:
-      - 3000:80
+      - 4040:3000

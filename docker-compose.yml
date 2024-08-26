@@ -6,7 +6,7 @@ services:
       context: ./server
     container_name: invoice_backend
     ports:
-      - 3001:3001
+      - 4041:3001
 
   frontend:
     build:

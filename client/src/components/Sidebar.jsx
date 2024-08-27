@@ -146,7 +146,7 @@ const Sidebar = () => {
               }}
             >
               <img
-                src={genpact_logo}
+                src={Picture1}
                 alt="Logo"
                 style={{ width: "100px", height: "55px", marginTop: "50px" }}
               />
@@ -163,7 +163,7 @@ const Sidebar = () => {
               }}
             >
               <img
-                src={genpact_logo}
+                src={Picture1}
                 alt="Logo"
                 style={{ width: "85px", height: "45px", marginTop: "55px" }}
               />
@@ -226,11 +226,11 @@ const Sidebar = () => {
                 marginBottom: "20px",
               }}
             >
-              <img
+              {/* <img
                 src={Picture1}
                 alt="Logo"
                 style={{ width: "130px", height: "75px", marginTop: "40px" }}
-              />
+              /> */}
             </div>
           )}
           {collapsed && (
@@ -243,11 +243,11 @@ const Sidebar = () => {
                 marginBottom: "20px",
               }}
             >
-              <img
+              {/* <img
                 src={Picture1}
                 alt="Logo"
                 style={{ width: "70px", height: "45px", marginTop: "60px" }}
-              />
+              /> */}
             </div>
           )}
 

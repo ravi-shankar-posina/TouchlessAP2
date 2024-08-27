@@ -478,7 +478,7 @@ const SourceData = () => {
       poNumber: "3165378918",
       item: 5,
       material: "1SDA073881R1",
-      qty: 15,
+      qty: 5,
       price: 1035.77,
       amount: 5178.85,
     },

@@ -177,6 +177,39 @@ app.put("/api/updatePdfData/:id", async (req, res) => {
     res.status(500).json({ message: "Error updating document", error });
   }
 });
+
+app.put("/api/updatePdfDataComment/:id", async (req, res) => {
+  const { id } = req.params;
+  console.log("id: ", id);
+  const { comment } = req.body;
+  console.log("comment: ", comment);
+
+  try {
+    const dbo = await connect();
+    const collection = dbo.collection("pdfdata");
+
+    const updateResult = await collection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { comment: comment } }
+    );
+    console.log("updateResult: ", updateResult);
+
+    if (updateResult.matchedCount === 0) {
+      return res.status(404).json({ message: "Document not found" });
+    }
+
+    const updatedPdfData = await collection.findOne({ _id: new ObjectId(id) });
+
+    res.status(200).json({
+      message: "Document updated successfully",
+      pdfData: updatedPdfData,
+    });
+  } catch (error) {
+    console.log("error: ", error.message);
+    res.status(500).json({ message: "Error updating document", error });
+  }
+});
+
 app.post("/api/registerUser", async (req, res) => {
   try {
     const { email, password, role, username, vendor } = req.body;
@@ -315,5 +348,26 @@ app.get("/api/getXlData", async (req, res) => {
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.post("/api/postPdfData", async (req, res) => {
+  try {
+    const dbo = await connect();
+    const collection = dbo.collection("pdfdata");
+
+    const data = req.body;
+
+    // Insert data into the collection
+    const result = await collection.insertMany(data);
+
+    res.status(201).json({
+      message: "Data inserted successfully",
+      insertedCount: result.insertedCount,
+      insertedIds: result.insertedIds,
+    });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ message: "An error occurred while inserting data" });
   }
 });

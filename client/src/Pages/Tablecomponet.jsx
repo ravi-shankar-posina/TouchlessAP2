@@ -73,6 +73,7 @@ const Tablecomponet = ({
   currentTable,
   setCurrentTable,
 }) => {
+  console.log("DBdata: ", PDFdata.comment);
   const [currentStatus, setCurrentStatus] = useState("");
   const [currentPrice, setCurrentPrice] = useState(0);
   const [editingKey, setEditingKey] = useState("");
@@ -98,16 +99,37 @@ const Tablecomponet = ({
   // Function to handle comment click
   const handleComment = (record) => {
     setCurrentRecord(record); // Set the record to be used in the modal
+
+    // Initialize comment state with the existing comment or an empty string if no comment exists
+    setComment(record.comment || "");
+
     setIsModalVisible(true); // Show the modal
   };
 
   // Function to handle OK button in modal
-  const handleOk = () => {
-    console.log("Comment for record:", currentRecord?.key, "is:", comment);
-    // Process comment data here, such as saving to a server
+  const handleOk = async () => {
+    if (currentRecord) {
+      try {
+        const response = await axios.put(
+          `${process.env.REACT_APP_API_URL}/api/updatePdfDataComment/${currentRecord._id}`,
+          {
+            comment: comment,
+          }
+        );
 
-    setIsModalVisible(false); // Hide the modal
-    setComment(""); // Clear comment input
+        if (response.status === 200) {
+          console.log("Comment updated successfully:", response.data.pdfData);
+          // Optionally, you can update the table or show a success message
+        }
+      } catch (error) {
+        console.error(
+          "Error updating comment:",
+          error.response ? error.response.data : error.message
+        );
+      }
+    }
+
+    setIsModalVisible(false); // Hide the modal after submission
   };
 
   // Function to handle Cancel button in modal
@@ -121,8 +143,12 @@ const Tablecomponet = ({
   };
 
   const validateData = (poNum, item, qty, amount, status) => {
+    console.log("item: ", item);
+    console.log("poNum: ", poNum);
     if (Array.isArray(DBdata)) {
+      console.log("DBdata: ", DBdata);
       const dbRecord = DBdata.find((data) => {
+        console.log("data: ", data.item);
         return data.poNum === poNum && data.item === item;
       });
       // console.log("dbRecord: ", dbRecord);
@@ -147,6 +173,7 @@ const Tablecomponet = ({
   const save = async (key) => {
     try {
       const row = await form.validateFields();
+      console.log("row: ", row);
       const newData = [...failedData];
       const index = newData.findIndex((item) => key === item.key);
       const record = newData[index];
@@ -158,7 +185,6 @@ const Tablecomponet = ({
         row.amount,
         record.status
       );
-      // console.log("validationMessage: ", validationMessage);
 
       if (validationMessage !== true) {
         message.error(`Provide the ${validationMessage}`);
@@ -178,8 +204,8 @@ const Tablecomponet = ({
           const response = await axios.put(
             `${process.env.REACT_APP_API_URL}/api/updatePdfData/${item._id}`,
             {
-              qty: row.qty,
-              amount: row.amount,
+              qty: row.qty !== undefined ? parseInt(row.qty) : item.qty, // Ensure qty is sent as an integer
+              amount: row.amount !== undefined ? row.amount : item.amount,
               status: "Successfully Process",
             }
           );
@@ -350,12 +376,14 @@ const Tablecomponet = ({
           </span>
         ) : (
           <span>
-            <Typography.Link
-              disabled={editingKey !== ""} // Assuming editingKey state is defined elsewhere
-              onClick={() => edit(record)} // Assuming edit function is defined elsewhere
-            >
-              <EditOutlined style={{ fontSize: 18, marginLeft: 20 }} />
-            </Typography.Link>
+            <Tooltip title="Edit" placement="top">
+              <Typography.Link
+                disabled={editingKey !== ""} // Assuming editingKey state is defined elsewhere
+                onClick={() => edit(record)} // Assuming edit function is defined elsewhere
+              >
+                <EditOutlined style={{ fontSize: 18 }} />
+              </Typography.Link>
+            </Tooltip>
             <Tooltip title="Add Comment" placement="top">
               <Typography.Link
                 style={{ marginLeft: 20 }}

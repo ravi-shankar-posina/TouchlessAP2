@@ -38,6 +38,10 @@ const Cards = ({ successData: sd, failedData, setCurrentTable }) => {
         return "#ff4747";
       case "AUTO POSTING":
         return "#73b5f2"; // Red for ERROR ff4747
+      case "AUTO POSTING VOLUME":
+        return "#e3ad2c";
+      case "SUCCESS VOLUME":
+        return "#397714";
       default:
         return "#e63f66"; // Default color
     }
@@ -50,6 +54,10 @@ const Cards = ({ successData: sd, failedData, setCurrentTable }) => {
         return "#ff4747";
       case "AUTO POSTING":
         return "#73b5f2"; // Red for ERROR ff4747
+      case "AUTO POSTING VOLUME":
+        return "#e3ad2c";
+      case "SUCCESS VOLUME":
+        return "#397714";
       default:
         return "#e63f66"; // Default color
     }
@@ -61,11 +69,15 @@ const Cards = ({ successData: sd, failedData, setCurrentTable }) => {
   const chartData = [
     { name: "AUTO POSTING", value: 457 },
     { name: "SUCCESS", value: processCount },
+    { name: "SUCCESS VOLUME", value: 337 },
     { name: "ERROR", value: errorCount },
+    { name: "AUTO POSTING VOLUME", value: 675 },
 
     // { name: "GR NO", value: 0 }, // You can set a default value for GR NO or fetch it from your data
   ];
   const chartData2 = [
+    { name: "AUTO POSTING VOLUME", value: 675 },
+    { name: "SUCCESS VOLUME", value: 337 },
     { name: "AUTO POSTING", value: 457 },
     { name: "SUCCESS", value: processCount },
     { name: "ERROR", value: errorCount },
@@ -114,7 +126,7 @@ const Cards = ({ successData: sd, failedData, setCurrentTable }) => {
         </div>
         <Row gutter={[16, 16]} justify="center">
           <Col>
-            <Link to="/header" state={{ type: "success" }}>
+            <Link to="/po-lineitems" state={{ type: "success" }}>
               <Card
                 style={{
                   width: "350px",
@@ -168,7 +180,7 @@ const Cards = ({ successData: sd, failedData, setCurrentTable }) => {
             </Link>
           </Col>{" "}
           <Col>
-            <Link to="/header" state={{ type: "success" }}>
+            <Link to="/po-lineitems" state={{ type: "success" }}>
               <Card
                 style={{
                   width: "350px",
@@ -222,7 +234,7 @@ const Cards = ({ successData: sd, failedData, setCurrentTable }) => {
             </Link>
           </Col>
           <Col>
-            <Link to="/header" state={{ type: "error" }}>
+            <Link to="/po-lineitems" state={{ type: "error" }}>
               <Card
                 onClick={() => setCurrentTable("Fail")}
                 style={{

@@ -83,42 +83,42 @@ const Sidebar = () => {
   ];
 
   // Define menu items for users only
-  const userMenuItems = [
-    {
-      key: "1",
-      icon: <BlockOutlined />,
-      label: t("header_items"),
-      link: "/headeritem",
-    },
-    {
-      key: "2",
-      icon: <FileTextOutlined />,
-      label: t("po_line_items"),
-      link: "/po-lineitems",
-    },
-    {
-      key: "3",
-      icon: <LogoutOutlined />,
-      label: t("logout"),
-      onClick: handleLogout,
-    },
-  ];
+  // const userMenuItems = [
+  //   {
+  //     key: "1",
+  //     icon: <BlockOutlined />,
+  //     label: t("header_items"),
+  //     link: "/headeritem",
+  //   },
+  //   {
+  //     key: "2",
+  //     icon: <FileTextOutlined />,
+  //     label: t("po_line_items"),
+  //     link: "/po-lineitems",
+  //   },
+  //   {
+  //     key: "3",
+  //     icon: <LogoutOutlined />,
+  //     label: t("logout"),
+  //     onClick: handleLogout,
+  //   },
+  // ];
 
   // Select menu items based on user role
-  const menuItems =
-    auth.role === "admin" || auth.role === "super-admin"
-      ? allMenuItems
-      : userMenuItems;
+  // const menuItems =
+  //   auth.role === "admin" || auth.role === "super-admin"
+  //     ? allMenuItems
+  //     : userMenuItems;
 
   useEffect(() => {
     // Check if the current location is allowed for the user's role
     const currentPath = location.pathname;
-    const allowedPaths = menuItems.map((item) => item.link);
+    const allowedPaths = allMenuItems.map((item) => item.link);
     if (!allowedPaths.includes(currentPath)) {
       // Redirect to the first allowed path if the current path is not allowed
       navigate(allowedPaths[0]);
     }
-  }, [auth, location, menuItems, navigate]);
+  }, [auth, location, allMenuItems, navigate]);
 
   const { i18n } = useTranslation();
 
@@ -173,11 +173,11 @@ const Sidebar = () => {
           <br />
           <Menu
             theme="#ffd6e7"
-            defaultSelectedKeys={[menuItems[0].key]}
+            defaultSelectedKeys={[allMenuItems[0].key]}
             mode="inline"
             style={{ margin: "10px" }}
           >
-            {menuItems.map(({ key, icon, label, link, onClick }) => {
+            {allMenuItems.map(({ key, icon, label, link, onClick }) => {
               const isSelected = location.pathname === link;
 
               return (

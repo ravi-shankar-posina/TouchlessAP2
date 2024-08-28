@@ -92,6 +92,14 @@ const Cards = ({ successData: sd, failedData, setCurrentTable }) => {
     return str.charAt(0).toUpperCase() + str.slice(1);
   };
   const username = capitalizeFirstLetter(auth.username);
+  const [dateString, setDateString] = useState(getFormattedDate());
+  function getFormattedDate() {
+    const now = new Date();
+    const day = String(now.getDate()).padStart(2, "0");
+    const month = String(now.getMonth() + 1).padStart(2, "0"); // Month is zero-based
+    const year = now.getFullYear();
+    return `${day}-${month}-${year}`;
+  }
   return (
     <Layout>
       {/* <div style={{ display: "flex",    }}> */}
@@ -101,10 +109,22 @@ const Cards = ({ successData: sd, failedData, setCurrentTable }) => {
           {" "}
           <div
             style={{
-              padding: "10px",
+              display: "flex",
+              justifyContent: "end",
+              fontSize: 15,
+              marginLeft: 10,
+              marginTop: 10,
+            }}
+          >
+            {" "}
+            Date: {dateString}
+          </div>
+          <div
+            style={{
+              padding: "6px",
               margin: "auto",
               backgroundClip: "padding-box",
-              fontSize: 20,
+              fontSize: 24,
               fontWeight: 600,
               width: 600,
               marginBottom: 30,
@@ -325,48 +345,97 @@ const ChartsContainer = ({ chartData, chartData2, getColor, getColor2 }) => (
     style={{
       margin: "65px",
       display: "flex",
-      justifyContent: "space-between",
-      width: "83%",
-      marginTop: 150,
+      justifyContent: "space-around",
+      marginTop: 140,
     }}
   >
     {/* Pie Chart */}
-    <Card bordered={false} style={{ flex: 1 }}>
-      <ResponsiveContainer width="100%" height={250}>
-        <PieChart>
-          <Pie
-            data={chartData}
-            dataKey="value"
-            nameKey="name"
-            fill="#8884d8"
-            label
-            style={{ fontSize: 18 }}
-          >
-            {chartData.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={getColor(entry.name)} />
-            ))}
-          </Pie>
-          <Tooltip />
-          <Legend />
-        </PieChart>
-      </ResponsiveContainer>
-    </Card>
+    <div style={{ width: 650 }}>
+      <span
+        style={{
+          fontSize: 20,
+          fontWeight: 600,
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        {" "}
+        Success Rate
+      </span>
+      <Card
+        bordered={false}
+        style={{
+          flex: 1,
+          marginTop: 20,
+          boxShadow:
+            "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 2px 10px 0 rgba(0, 0, 0, 0.19)",
+        }}
+      >
+        <ResponsiveContainer width="100%" height={250}>
+          <PieChart>
+            <Pie
+              data={chartData}
+              dataKey="value"
+              nameKey="name"
+              fill="#8884d8"
+              label
+              style={{ fontSize: 18 }}
+            >
+              {chartData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={getColor(entry.name)} />
+              ))}
+            </Pie>
+            <Tooltip />
+            <Legend />
+          </PieChart>
+        </ResponsiveContainer>
+      </Card>
+    </div>
     {/* Bar Chart */}
-    <Card bordered={false} style={{ flex: 1, marginLeft: "50px" }}>
-      <ResponsiveContainer width="100%" height={250}>
-        <BarChart data={chartData2}>
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip formatter={(value) => `${value}$`} />
-          <Legend />
-          <Bar dataKey="value">
-            {chartData2.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={getColor2(entry.name)} />
-            ))}
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
-    </Card>
+    <div style={{ width: 650 }}>
+      <span
+        style={{
+          fontSize: 20,
+          fontWeight: 600,
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        PO Value Processed
+      </span>
+      <Card
+        bordered={false}
+        style={{
+          flex: 1,
+          marginTop: 20,
+          boxShadow:
+            "0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 2px 10px 0 rgba(0, 0, 0, 0.19)",
+        }}
+      >
+        <ResponsiveContainer width="100%" height={250}>
+          <BarChart data={chartData2}>
+            <XAxis
+              dataKey="name"
+              tick={false} // This will hide the default axis labels and ticks
+              label={{
+                value: "PO Value",
+                position: "insideBottom",
+                // offset: -10, // Adjust this value as needed
+                style: { fontSize: 14, fontWeight: 500 },
+              }}
+            />
+            <YAxis />
+            <Tooltip formatter={(value) => `${value}$`} />
+            {/* <Legend /> */}
+            <Bar dataKey="value">
+              {chartData2.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={getColor2(entry.name)} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </Card>
+    </div>
   </div>
 );
 

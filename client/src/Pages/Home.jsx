@@ -69,18 +69,18 @@ const Cards = ({ successData: sd, failedData, setCurrentTable }) => {
   const chartData = [
     { name: "AUTO POSTING", value: 457 },
     { name: "SUCCESS", value: processCount },
-    { name: "SUCCESS VOLUME", value: 337 },
+    // { name: "SUCCESS VOLUME", value: 337 },
     { name: "ERROR", value: errorCount },
-    { name: "AUTO POSTING VOLUME", value: 675 },
+    // { name: "AUTO POSTING VOLUME", value: 675 },
 
     // { name: "GR NO", value: 0 }, // You can set a default value for GR NO or fetch it from your data
   ];
   const chartData2 = [
     { name: "AUTO POSTING VOLUME", value: 675 },
     { name: "SUCCESS VOLUME", value: 337 },
-    { name: "AUTO POSTING", value: 457 },
-    { name: "SUCCESS", value: processCount },
-    { name: "ERROR", value: errorCount },
+    // { name: "AUTO POSTING", value: 457 },
+    { name: "", value: 0 },
+    { name: "", value: 0 },
     // { name: "AUTO POSTING", value: 457 },
     // { name: "SUCCESS", value: processCount },
     // { name: "ERROR", value: errorCount },
@@ -357,7 +357,7 @@ const ChartsContainer = ({ chartData, chartData2, getColor, getColor2 }) => (
         <BarChart data={chartData2}>
           <XAxis dataKey="name" />
           <YAxis />
-          <Tooltip />
+          <Tooltip formatter={(value) => `${value}$`} />
           <Legend />
           <Bar dataKey="value">
             {chartData2.map((entry, index) => (

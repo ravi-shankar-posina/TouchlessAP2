@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { Card, Row, Col } from "antd";
 import {
   PieChart,
@@ -26,9 +26,17 @@ import { MyContext } from "../components/AuthProvider";
 const Cards = ({ successData: sd, failedData, setCurrentTable }) => {
   const [processCount, setProcessCount] = useState(0);
   const [errorCount, setErrorCount] = useState(0);
-  const [autoPostNo, setAutoPostNo] = useState(0);
+  // const [autoPostNo, setAutoPostNo] = useState(0);
   const [poData, setPoData] = useState([]);
   const { auth } = useContext(MyContext);
+  const [autoPostNo, setAutoPostNo] = useState(() => {
+    const storedAutoPostNo = localStorage.getItem("autoPostNo");
+    return storedAutoPostNo ? parseInt(storedAutoPostNo) : 457;
+  });
+
+  // Ref to store the previous length of success data (sd)
+  const prevSdLengthRef = useRef(sd?.length || 0);
+  const initialRender = useRef(true); // To track initial render
 
   const getColor = (name) => {
     switch (name) {
@@ -62,12 +70,33 @@ const Cards = ({ successData: sd, failedData, setCurrentTable }) => {
         return "#e63f66"; // Default color
     }
   };
+
   useEffect(() => {
+    // Set process count for sd and error count for failedData
     setProcessCount(sd?.length || 0);
     setErrorCount(failedData?.length || 0);
+
+    const previousSdLength = parseInt(localStorage.getItem("sdLength") || "0");
+
+    // Check if sd length has increased and it's not the first render
+    if (!initialRender.current) {
+      if (sd?.length > previousSdLength) {
+        setAutoPostNo((prev) => {
+          const newCount = prev + 1;
+          localStorage.setItem("autoPostNo", newCount); // Update autoPostNo in localStorage
+          return newCount;
+        });
+      }
+
+      // Update sdLength in localStorage after the comparison
+      localStorage.setItem("sdLength", sd?.length || "0");
+    } else {
+      initialRender.current = false; // Skip the first render
+    }
   }, [sd, failedData]);
+
   const chartData = [
-    { name: "AUTO POSTING", value: 457 },
+    { name: "AUTO POSTING", value: autoPostNo },
     { name: "SUCCESS", value: processCount },
     // { name: "SUCCESS VOLUME", value: 337 },
     { name: "ERROR", value: errorCount },
@@ -189,7 +218,7 @@ const Cards = ({ successData: sd, failedData, setCurrentTable }) => {
                         fontWeight: 600,
                       }}
                     >
-                      457
+                      {autoPostNo}
                     </span>
                     <span style={{ marginLeft: " 10px", marginTop: 2 }}>
                       <ArrowUpOutlined style={{ fontSize: "30px" }} />
@@ -360,7 +389,7 @@ const ChartsContainer = ({ chartData, chartData2, getColor, getColor2 }) => (
         }}
       >
         {" "}
-        Success Rate
+        Volume Processed
       </span>
       <Card
         bordered={false}
@@ -401,7 +430,7 @@ const ChartsContainer = ({ chartData, chartData2, getColor, getColor2 }) => (
           justifyContent: "center",
         }}
       >
-        PO Value Processed
+        Value Processed
       </span>
       <Card
         bordered={false}
